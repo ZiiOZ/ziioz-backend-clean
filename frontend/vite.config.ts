@@ -3,8 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  root: './',
-  base: '/', // ✅ Required for Render and production
+  base: '/', // ✅ important for Render
   build: {
     outDir: 'dist',
   },

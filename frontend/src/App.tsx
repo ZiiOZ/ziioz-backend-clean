@@ -1,19 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ZiiPostForm from './components/ZiiPostForm';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ZiiPostFeed from './components/ZiiPostFeed';
-import ZiiPostDetail from './components/ZiiPostDetail';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ZiiPostFeed />} />
-        <Route path="/ziipostform" element={<ZiiPostForm />} />
         <Route path="/ziiposts" element={<ZiiPostFeed />} />
-        <Route path="/post/:id" element={<ZiiPostDetail />} />
-        <Route path="*" element={<div className="p-6 text-center">Page Not Found</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
