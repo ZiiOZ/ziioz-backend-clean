@@ -1,14 +1,16 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  root: '.', // project root
-  base: '/', // required for Render
+  root: '.', // important to stay at project root
+  publicDir: 'public',
   build: {
     outDir: 'dist',
+    emptyOutDir: true,
     rollupOptions: {
-      input: './public/index.html', // this is the key line
+      input: path.resolve(__dirname, 'public/index.html'),
     },
   },
-});
+})
