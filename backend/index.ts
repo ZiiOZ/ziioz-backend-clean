@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config(); // ✅ Must come FIRST
+
 import express from 'express';
 import cors from 'cors';
 
