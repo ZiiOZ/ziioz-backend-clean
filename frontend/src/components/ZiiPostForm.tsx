@@ -1,90 +1,49 @@
-import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
+// src/components/ZiiPostForm.tsx
+import { useState } from 'react';
+import { useEnhancePost } from '@/hooks/useEnhancePost';
 
 export default function ZiiPostForm() {
   const [content, setContent] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { hook, hashtags, loading, error, enhance } = useEnhancePost();
 
-  const handleSubmit = async () => {
-    if (!content.trim()) return;
-    setLoading(true);
+  const handleEnhance = () => {
+    if (content.trim().length > 10) enhance(content);
+  };
 
-    try {
-      let image_url = '';
-
-      // ✅ Upload image to Supabase Storage (post-images)
-      if (image) {
-        const fileExt = image.name.split('.').pop();
-        const filePath = `${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('post-images')
-          .upload(filePath, image, { cacheControl: '3600', upsert: false });
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicUrlData } = supabase.storage
-          .from('post-images')
-          .getPublicUrl(filePath);
-
-        image_url = publicUrlData?.publicUrl || '';
-        console.log('✅ Image URL:', image_url);
-      }
-
-      // ✅ Call backend AI API to get hook and hashtags
-      const aiRes = await fetch('https://ziioz-backend-platform.onrender.com/api/ai-post-enhance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      });
-
-      const aiData = await aiRes.json();
-
-      // ✅ Insert post into Supabase
-      const { error: insertError } = await supabase.from('posts').insert({
-        username: 'Anonymous',
-        content,
-        image_url,
-        hook: aiData.hook || '',
-        hashtags: (aiData.hashtags || []).join(', '),
-      });
-
-      if (insertError) throw insertError;
-
-      setContent('');
-      setImage(null);
-      alert('✅ Post uploaded with AI enhancements!');
-    } catch (err) {
-      console.error('❌ Upload failed:', err);
-      alert('❌ Failed to upload. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Submit to backend
+    console.log('Submitting post:', content);
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-xl shadow-md space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg shadow-sm bg-white">
       <textarea
-        className="w-full border border-gray-300 rounded p-2"
+        className="w-full border p-2 rounded resize-none"
         rows={4}
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        onBlur={handleEnhance}
         placeholder="What's on your mind?"
       />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setImage(e.target.files?.[0] || null)}
-        className="block w-full text-sm text-gray-600"
-      />
+
+      {loading && <p className="text-sm text-gray-400">Enhancing...</p>}
+      {hook && <p className="text-sm font-medium text-blue-600">✨ {hook}</p>}
+      {hashtags.length > 0 && (
+        <div className="flex gap-2 flex-wrap mt-1 text-xs text-gray-500">
+          {hashtags.map((tag, idx) => (
+            <span key={idx}>#{tag}</span>
+          ))}
+        </div>
+      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
       <button
-        disabled={loading}
-        onClick={handleSubmit}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        type="submit"
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        {loading ? 'Posting...' : 'Post with AI Boost'}
+        Post
       </button>
-    </div>
+    </form>
   );
 }
