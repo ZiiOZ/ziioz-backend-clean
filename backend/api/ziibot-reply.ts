@@ -1,7 +1,7 @@
 // backend/api/ziibot-reply.ts
 import express from 'express';
 import OpenAI from 'openai';
-import supabase from '../backend/supabaseServerClient';
+import { supabase } from '../supabaseServerClient';
 
 const router = express.Router();
 
