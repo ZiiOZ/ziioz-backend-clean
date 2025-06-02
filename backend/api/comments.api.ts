@@ -1,6 +1,5 @@
-// backend/api/comments.api.ts
 import express from 'express';
-import supabase from '../backend/supabaseServerClient';
+import supabase from '../supabaseServerClient'; // ✅ Correct path
 
 const router = express.Router();
 
