@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { BoostButton } from './BoostButton';
-import ZiiCommentFeed from './ZiiCommentFeed'; // ✅ Add this
+import ZiiCommentFeed from './ZiiCommentFeed';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
@@ -82,7 +82,6 @@ export default function ZiiPostFeed() {
             <BoostButton postId={post.id} initialBoosts={post.boosts || 0} />
           </div>
 
-          {/* ✅ Add ZiiCommentFeed right here */}
           <ZiiCommentFeed postId={post.id} />
         </div>
       ))}

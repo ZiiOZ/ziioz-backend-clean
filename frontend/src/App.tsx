@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ZiiPostFeed from './components/ZiiPostFeed';
-import NotFound from './components/NotFound';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ZiiPostFeed from './components/ZiiPostFeed'
+import NotFound from './components/NotFound'
 
 function App() {
   return (
@@ -10,7 +10,9 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default function NotFound() {
+  return <div>Page Not Found</div>
+}
