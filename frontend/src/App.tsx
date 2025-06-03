@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ZiiPostFeed from './components/ZiiPostFeed'
-import NotFound from './components/NotFound'
+import NotFound from './components/NotFound' // ✅ This is all you need
 
 function App() {
   return (
@@ -13,6 +13,4 @@ function App() {
   )
 }
 
-export default function NotFound() {
-  return <div>Page Not Found</div>
-}
+export default App // ✅ Proper export
