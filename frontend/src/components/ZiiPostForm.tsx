@@ -159,4 +159,10 @@ export default function ZiiPostForm() {
       <button
         onClick={handleSubmit}
         disabled={!content.trim() || loading}
-        className="px-4 py-2 bg-black
+        className="px-4 py-2 bg-black text-white rounded"
+      >
+        {loading ? 'Submitting...' : 'Submit Post'}
+      </button>
+    </div>
+  );
+}
