@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import PostBoostButton from './PostBoostButton';
 
 interface Post {
   id: number;
@@ -9,6 +10,7 @@ interface Post {
   image_url?: string;
   username?: string;
   created_at: string;
+  boosts: number; // ✅ Add this!
 }
 
 export default function ZiiPostFeed() {
@@ -61,6 +63,11 @@ export default function ZiiPostFeed() {
               ))}
             </p>
           )}
+
+          <div className="flex items-center gap-2 mt-2">
+            <PostBoostButton postId={post.id} />
+            <span className="text-sm text-gray-500">{post.boosts} boosts</span>
+          </div>
 
           <p className="text-xs text-gray-500">
             by {post.username || 'anonymous'} •{' '}

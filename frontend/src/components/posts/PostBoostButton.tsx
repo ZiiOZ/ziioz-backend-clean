@@ -1,28 +1,28 @@
 import { useState, useEffect } from 'react';
 
-export default function BoostButton({ commentId }: { commentId: string }) {
+export default function PostBoostButton({ postId }: { postId: string }) {
   const [boosted, setBoosted] = useState(false);
 
   useEffect(() => {
-    const boostedKey = `${commentId}_boosted`;
+    const key = `${postId}_boosted`;
     const session = localStorage.getItem('ziioz_session') || crypto.randomUUID();
     localStorage.setItem('ziioz_session', session);
-    setBoosted(localStorage.getItem(boostedKey) === 'true');
-  }, [commentId]);
+    setBoosted(localStorage.getItem(key) === 'true');
+  }, [postId]);
 
   const handleBoost = async () => {
     const session = localStorage.getItem('ziioz_session');
-    const boostedKey = `${commentId}_boosted`;
+    const key = `${postId}_boosted`;
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/boost-comment`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/boost-post`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commentId, userSession: session }),
+      body: JSON.stringify({ postId, userSession: session }),
     });
 
     const result = await res.json();
     if (res.ok) {
-      localStorage.setItem(boostedKey, 'true');
+      localStorage.setItem(key, 'true');
       setBoosted(true);
     } else {
       alert(result.error || 'Boost failed');

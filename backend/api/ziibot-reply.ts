@@ -1,4 +1,3 @@
-// backend/api/ziibot-reply.ts
 import express from 'express';
 import OpenAI from 'openai';
 
@@ -12,14 +11,14 @@ router.post('/api/ziibot-reply', async (req, res) => {
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: `Reply helpfully to: "${comment}"` }],
+      messages: [{ role: 'user', content: `Reply to this comment: "${comment}"` }],
     });
 
-    const reply = completion.choices?.[0]?.message?.content?.trim();
+    const reply = completion.choices[0]?.message?.content?.trim();
     res.json({ reply });
   } catch (err) {
-    console.error('[ZiiBot Reply Error]', err);
-    res.status(500).json({ error: 'AI reply failed' });
+    console.error('ZiiBot reply error:', err);
+    res.status(500).json({ error: 'Failed to generate reply' });
   }
 });
 

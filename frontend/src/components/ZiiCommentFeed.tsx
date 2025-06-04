@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import ZiiBotReplyButton from './ZiiBotReplyButton';
 import ZiiBotReply from './ZiiBotReply';
+import BoostButton from './BoostButton';
 
 interface Comment {
   id: number;
@@ -9,6 +10,7 @@ interface Comment {
   username: string;
   content: string;
   created_at: string;
+  boosts: number;
   showZiiBotReply?: boolean;
   replyText?: string;
 }
@@ -71,6 +73,11 @@ export default function ZiiCommentFeed({ postId }: { postId: string }) {
           <p className="font-semibold">{comment.username}</p>
           <p>{comment.content}</p>
           <p className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleString()}</p>
+
+          <div className="flex items-center gap-2 mt-1">
+            <BoostButton commentId={comment.post_id} />
+            <span className="text-sm text-gray-500">{comment.boosts} boosts</span>
+          </div>
 
           {comment.showZiiBotReply && comment.replyText && (
             <ZiiBotReply reply={comment.replyText} />
