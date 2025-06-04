@@ -4,28 +4,26 @@ import dotenv from 'dotenv';
 import aiPostEnhance from './api/ai-post-enhance';
 import ziiBotReply from './api/ziibot-reply';
 import spinPost from './api/spin-post';
-app.use(spinPost);
-
 
 dotenv.config();
 
-const app = express();
+const app = express(); // ✅ Declare first
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// API routes
+// API Routes
 app.use(aiPostEnhance);
 app.use(ziiBotReply);
+app.use(spinPost);
 
-// Health check
+// Health Check
 app.get('/', (req, res) => {
   res.send('ZiiOZ Backend is Live');
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
