@@ -66,25 +66,34 @@ export default function ZiiPostForm() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log('🔥 handleSubmit called');
+    console.log('🔥 Submitting real post...');
 
     try {
-      // Use hardcoded test insert to validate connection
-      const { error } = await supabase.from('posts').insert([
-        {
-          content: 'This is a test post from ZiiPostForm',
-          hook: '🔥 Fire content drop!',
-          hashtags: 'test,debug,ziioz',
-          image_url: null,
-          username: 'debugUser',
-        },
-      ]);
+      const uploadedImageUrl = await handleImageUpload();
+
+      const payload = {
+        content,
+        hook,
+        hashtags: hashtags.join(', '),
+        image_url: uploadedImageUrl || null,
+        username: 'ZiiUser',
+      };
+
+      const { error } = await supabase.from('posts').insert([payload]);
 
       if (error) {
-        console.error('❌ Insert error:', error.message, error.details);
+        console.error('❌ Submit error:', error.message, error.details);
       } else {
-        console.log('✅ Post inserted to Supabase successfully');
-        alert('Test post submitted!');
+        console.log('✅ Post submitted:', payload);
+        alert('Post submitted!');
+
+        // Reset form
+        setContent('');
+        setHook('');
+        setHashtags([]);
+        setSpins([]);
+        setImageFile(null);
+        setImageUrl(null);
       }
     } finally {
       setLoading(false);
@@ -148,6 +157,7 @@ export default function ZiiPostForm() {
 
       <button
         onClick={handleSubmit}
+        disabled={!hook || loading}
         className="px-4 py-2 bg-black text-white rounded"
       >
         Submit Post
