@@ -1,49 +1,80 @@
-// src/components/ZiiPostForm.tsx
 import { useState } from 'react';
-import { useEnhancePost } from '@/hooks/useEnhancePost';
+import { supabase } from '../supabaseClient';
 
 export default function ZiiPostForm() {
   const [content, setContent] = useState('');
-  const { hook, hashtags, loading, error, enhance } = useEnhancePost();
+  const [hook, setHook] = useState('');
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleEnhance = () => {
-    if (content.trim().length > 10) enhance(content);
+  const handleEnhance = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('https://ziioz-backend-platform.onrender.com/api/ai-post-enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      setHook(data.hook || '');
+      setHashtags(data.hashtags || []);
+    } catch (err) {
+      console.error('AI Enhance error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Submit to backend
-    console.log('Submitting post:', content);
+  const handleSubmit = async () => {
+    if (!content) return;
+
+    const { error } = await supabase.from('posts').insert([
+      {
+        content,
+        hook,
+        hashtags: hashtags.join(', '),
+      },
+    ]);
+    if (error) console.error('Post submit error:', error);
+    else {
+      setContent('');
+      setHook('');
+      setHashtags([]);
+      alert('Post submitted!');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg shadow-sm bg-white">
+    <div className="space-y-4">
       <textarea
-        className="w-full border p-2 rounded resize-none"
-        rows={4}
+        className="w-full border p-2"
+        placeholder="Write your post..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        onBlur={handleEnhance}
-        placeholder="What's on your mind?"
       />
 
-      {loading && <p className="text-sm text-gray-400">Enhancing...</p>}
-      {hook && <p className="text-sm font-medium text-blue-600">✨ {hook}</p>}
-      {hashtags.length > 0 && (
-        <div className="flex gap-2 flex-wrap mt-1 text-xs text-gray-500">
-          {hashtags.map((tag, idx) => (
-            <span key={idx}>#{tag}</span>
-          ))}
+      <button
+        onClick={handleEnhance}
+        disabled={loading || !content.trim()}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        {loading ? 'Enhancing...' : 'Enhance with ZiiBot'}
+      </button>
+
+      {hook && (
+        <div className="bg-gray-100 p-3 rounded">
+          <p><strong>Hook:</strong> {hook}</p>
+          <p><strong>Hashtags:</strong> {hashtags.map(h => `#${h}`).join(' ')}</p>
         </div>
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <button
-        type="submit"
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+        onClick={handleSubmit}
+        disabled={!hook}
+        className="px-4 py-2 bg-black text-white rounded"
       >
-        Post
+        Submit Post
       </button>
-    </form>
+    </div>
   );
 }

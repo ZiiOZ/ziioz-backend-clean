@@ -1,94 +1,102 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
+import ZiiBotReply from './ZiiBotReply';
+import ZiiBotReplyButton from './ZiiBotReplyButton';
 
-type Comment = {
+interface Comment {
   id: number;
-  post_id: number;
+  post_id: string;
+  username: string;
   content: string;
   created_at: string;
-  username?: string;
-};
+  showZiiBotReply?: boolean;
+  replyText?: string;
+}
 
-const ZiiCommentFeed = ({ postId }: { postId: string | number }) => {
+export default function ZiiCommentFeed({ postId }: { postId: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [replies, setReplies] = useState<{ [commentId: number]: string }>({});
-  const [loadingReply, setLoadingReply] = useState<number | null>(null);
+  const [newComment, setNewComment] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-      const res = await fetch(`https://ziioz-backend-platform.onrender.com/api/comments?postId=${postId}`);
-        const data = await res.json();
-        setComments(data || []);
-      } catch (err) {
-        console.error('Failed to load comments:', err);
-      }
-    };
-
     fetchComments();
   }, [postId]);
 
-  const handleZiiBotReply = async (commentId: number, content: string) => {
-    if (replies[commentId]) return;
+  const fetchComments = async () => {
+    const { data, error } = await supabase
+      .from('comments')
+      .select('*')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
 
-    setLoadingReply(commentId);
+    if (error) console.error('Error loading comments:', error);
+    else setComments(data);
+  };
 
-    try {
-      const response = await axios.post('/api/ziibot-reply', {
-        comment: content,
+  const handleSubmit = async () => {
+    if (!newComment.trim() || !username.trim()) return;
+    const { error } = await supabase.from('comments').insert([
+      {
         post_id: postId,
-      });
-
-      const reply = response.data?.reply || 'No response';
-      setReplies((prev) => ({ ...prev, [commentId]: reply }));
-    } catch (err) {
-      console.error('ZiiBot reply error:', err);
-      setReplies((prev) => ({
-        ...prev,
-        [commentId]: '❌ Error from ZiiBot',
-      }));
-    } finally {
-      setLoadingReply(null);
+        username,
+        content: newComment,
+      },
+    ]);
+    if (error) console.error('Submit error:', error);
+    else {
+      setNewComment('');
+      fetchComments();
     }
   };
 
   return (
-    <div className="mt-4 space-y-4">
-      {comments.map((comment) => (
-        <div
-          key={comment.id}
-          className="bg-gray-50 p-3 rounded-xl border shadow-sm space-y-2"
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <input
+          className="border p-2 w-full"
+          placeholder="Your name"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <textarea
+          className="border p-2 w-full"
+          placeholder="Add a comment..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+        <button
+          className="px-4 py-2 bg-black text-white rounded"
+          onClick={handleSubmit}
         >
-          <div className="text-sm text-gray-800">
-            {comment.username && (
-              <span className="font-semibold mr-2 text-purple-700">
-                {comment.username}:
-              </span>
+          Submit
+        </button>
+      </div>
+
+      <div className="pt-4">
+        {comments.map((comment) => (
+          <div key={comment.id} className="border-b pb-4 mb-4">
+            <p className="font-semibold">{comment.username}</p>
+            <p>{comment.content}</p>
+
+            {comment.showZiiBotReply && comment.replyText && (
+              <ZiiBotReply reply={comment.replyText} />
             )}
-            {comment.content}
+
+            <ZiiBotReplyButton
+              comment={comment.content}
+              onReply={(replyText) => {
+                setComments((prev) =>
+                  prev.map((c) =>
+                    c.id === comment.id
+                      ? { ...c, showZiiBotReply: true, replyText }
+                      : c
+                  )
+                );
+              }}
+            />
           </div>
-
-          <button
-            className={`text-xs px-2 py-1 rounded-full ${
-              replies[comment.id]
-                ? 'text-gray-400 border border-gray-300 cursor-default'
-                : 'text-purple-600 border border-purple-600 hover:bg-purple-50'
-            }`}
-            disabled={!!replies[comment.id] || loadingReply === comment.id}
-            onClick={() => handleZiiBotReply(comment.id, comment.content)}
-          >
-            {loadingReply === comment.id ? 'ZiiBot typing...' : 'Ask ZiiBot 🤖'}
-          </button>
-
-          {replies[comment.id] && (
-            <div className="text-sm text-blue-700 bg-blue-50 p-2 rounded-lg">
-              {replies[comment.id]}
-            </div>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
-};
-
-export default ZiiCommentFeed;
+}
