@@ -14,24 +14,24 @@ router.post('/api/spin-post', async (req, res) => {
       messages: [{
         role: 'user',
         content: `
-Create 3 alternate versions of the following post, keeping the meaning but using different styles or tones. Respond as a JSON array:
+Create 3 alternate versions of the following post, keeping the meaning but using different tones/styles. Respond as a JSON array:
 [
-  "First variation",
-  "Second variation",
-  "Third variation"
+  "First version",
+  "Second version",
+  "Third version"
 ]
 
 Post:
 ${content}
-        `,
+        `
       }],
     });
 
-    const json = response.choices?.[0]?.message?.content?.trim();
-    const spins = JSON.parse(json || '[]');
+    const text = response.choices?.[0]?.message?.content?.trim();
+    const spins = JSON.parse(text || '[]');
     res.json({ spins });
   } catch (err) {
-    console.error('[Spin Post Error]', err);
+    console.error('SpinPost API error:', err);
     res.status(500).json({ error: 'Spin failed' });
   }
 });
