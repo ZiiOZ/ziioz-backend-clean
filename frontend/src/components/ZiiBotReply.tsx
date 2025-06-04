@@ -1,12 +1,7 @@
-// src/components/comments/ZiiBotReply.tsx
-interface Props {
-  reply: string;
-}
-
-export default function ZiiBotReply({ reply }: Props) {
+export default function ZiiBotReply({ reply }: { reply: string }) {
   return (
-    <div className="mt-2 p-2 bg-blue-50 text-blue-900 border border-blue-200 rounded">
-      <strong>ZiiBot:</strong> {reply}
+    <div className="bg-gray-100 mt-2 p-2 rounded border text-sm text-gray-800">
+      <p><strong>ZiiBot:</strong> {reply}</p>
     </div>
   );
 }

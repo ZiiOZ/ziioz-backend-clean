@@ -1,26 +1,26 @@
-// src/components/comments/ZiiBotReplyButton.tsx
 import { useState } from 'react';
 
-interface Props {
+export default function ZiiBotReplyButton({
+  comment,
+  onReply,
+}: {
   comment: string;
   onReply: (reply: string) => void;
-}
-
-export default function ZiiBotReplyButton({ comment, onReply }: Props) {
+}) {
   const [loading, setLoading] = useState(false);
 
-  const handleGenerateReply = async () => {
+  const handleReply = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://ziioz-backend-platform.onrender.com/api/ziibot-reply', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ziibot-reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ comment }),
       });
       const data = await res.json();
-      if (data.reply) onReply(data.reply);
+      onReply(data.reply);
     } catch (err) {
-      console.error('ZiiBot reply error:', err);
+      console.error('Bot reply failed:', err);
     } finally {
       setLoading(false);
     }
@@ -28,11 +28,11 @@ export default function ZiiBotReplyButton({ comment, onReply }: Props) {
 
   return (
     <button
-      onClick={handleGenerateReply}
-      className="mt-2 px-3 py-1 text-sm rounded bg-gray-800 text-white hover:bg-gray-700"
+      onClick={handleReply}
       disabled={loading}
+      className="text-sm text-indigo-600 hover:underline mt-2"
     >
-      {loading ? 'ZiiBot typing...' : 'Reply with ZiiBot'}
+      {loading ? 'ZiiBot replying...' : 'Ask ZiiBot to respond'}
     </button>
   );
 }
