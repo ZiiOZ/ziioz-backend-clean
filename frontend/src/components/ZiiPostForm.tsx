@@ -5,12 +5,15 @@ export default function ZiiPostForm() {
   const [content, setContent] = useState('');
   const [hook, setHook] = useState('');
   const [hashtags, setHashtags] = useState<string[]>([]);
+  const [spins, setSpins] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const handleEnhance = async () => {
     setLoading(true);
     try {
-      const res = await fetch('https://ziioz-backend-platform.onrender.com/api/ai-post-enhance', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ai-post-enhance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
@@ -18,6 +21,7 @@ export default function ZiiPostForm() {
       const data = await res.json();
       setHook(data.hook || '');
       setHashtags(data.hashtags || []);
+      console.log('Enhance result:', data);
     } catch (err) {
       console.error('AI Enhance error:', err);
     } finally {
@@ -25,27 +29,70 @@ export default function ZiiPostForm() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!content) return;
+  const handleSpin = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/spin-post`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      setSpins(data.spins || []);
+      console.log('Spin result:', data);
+    } catch (err) {
+      console.error('Spin error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const { error } = await supabase.from('posts').insert([
-      {
-        content,
-        hook,
-        hashtags: hashtags.join(', '),
-      },
-    ]);
-    if (error) console.error('Post submit error:', error);
-    else {
-      setContent('');
-      setHook('');
-      setHashtags([]);
-      alert('Post submitted!');
+  const handleImageUpload = async () => {
+    if (!imageFile) return null;
+
+    const filePath = `post-${Date.now()}-${imageFile.name}`;
+    const { data, error } = await supabase.storage
+      .from('post-images')
+      .upload(filePath, imageFile, { cacheControl: '3600', upsert: false });
+
+    if (error) {
+      console.error('Upload error:', error);
+      return null;
+    }
+
+    const { data: publicUrl } = supabase.storage.from('post-images').getPublicUrl(filePath);
+    return publicUrl.publicUrl;
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    console.log('🔥 handleSubmit called');
+
+    try {
+      // Use hardcoded test insert to validate connection
+      const { error } = await supabase.from('posts').insert([
+        {
+          content: 'This is a test post from ZiiPostForm',
+          hook: '🔥 Fire content drop!',
+          hashtags: 'test,debug,ziioz',
+          image_url: null,
+          username: 'debugUser',
+        },
+      ]);
+
+      if (error) {
+        console.error('❌ Insert error:', error.message, error.details);
+      } else {
+        console.log('✅ Post inserted to Supabase successfully');
+        alert('Test post submitted!');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-xl mx-auto">
       <textarea
         className="w-full border p-2"
         placeholder="Write your post..."
@@ -53,13 +100,44 @@ export default function ZiiPostForm() {
         onChange={(e) => setContent(e.target.value)}
       />
 
-      <button
-        onClick={handleEnhance}
-        disabled={loading || !content.trim()}
-        className="px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        {loading ? 'Enhancing...' : 'Enhance with ZiiBot'}
-      </button>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+      />
+
+      <div className="flex gap-3">
+        <button
+          onClick={handleEnhance}
+          disabled={loading || !content.trim()}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          {loading ? 'Enhancing...' : 'Enhance with ZiiBot'}
+        </button>
+
+        <button
+          onClick={handleSpin}
+          disabled={loading || !content.trim()}
+          className="px-4 py-2 bg-purple-600 text-white rounded"
+        >
+          {loading ? 'Spinning...' : 'Spin Again'}
+        </button>
+      </div>
+
+      {spins.length > 0 && (
+        <div className="bg-yellow-50 p-3 rounded space-y-2">
+          <p className="font-semibold text-yellow-700">Choose a spin version:</p>
+          {spins.map((spin, i) => (
+            <button
+              key={i}
+              onClick={() => setContent(spin)}
+              className="block text-left p-2 border rounded hover:bg-yellow-100 w-full"
+            >
+              {spin}
+            </button>
+          ))}
+        </div>
+      )}
 
       {hook && (
         <div className="bg-gray-100 p-3 rounded">
@@ -70,7 +148,6 @@ export default function ZiiPostForm() {
 
       <button
         onClick={handleSubmit}
-        disabled={!hook}
         className="px-4 py-2 bg-black text-white rounded"
       >
         Submit Post
