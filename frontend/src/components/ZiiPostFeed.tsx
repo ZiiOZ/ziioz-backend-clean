@@ -4,12 +4,11 @@ import { supabase } from '../supabaseClient';
 interface Post {
   id: number;
   content: string;
-  hook: string;
-  hashtags: string;
-  image_url: string | null;
+  hook?: string;
+  hashtags?: string;
+  image_url?: string;
+  username?: string;
   created_at: string;
-  username: string;
-  boosts: number;
 }
 
 export default function ZiiPostFeed() {
@@ -25,37 +24,48 @@ export default function ZiiPostFeed() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) console.error('Fetch posts error:', error);
-    else setPosts(data);
+    if (error) {
+      console.error('Error loading posts:', error);
+    } else {
+      setPosts(data || []);
+    }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 space-y-6">
+    <div className="max-w-2xl mx-auto mt-6 space-y-6">
       <h2 className="text-xl font-bold">🧠 ZiiPosts</h2>
 
       {posts.map((post) => (
-        <div key={post.id} className="border border-gray-200 rounded-lg p-4 shadow-sm">
-          {post.hook && <p className="text-lg font-semibold text-blue-800 mb-2">{post.hook}</p>}
-          <p className="mb-2">{post.content}</p>
-
-          {post.hashtags && (
-            <p className="text-sm text-gray-600">
-              {post.hashtags
-                .split(',')
-                .map((tag) => `#${tag.trim()}`)
-                .join(' ')}
-            </p>
+        <div
+          key={post.id}
+          className="border rounded-lg p-4 shadow-sm bg-white space-y-2"
+        >
+          {post.hook && (
+            <p className="text-indigo-600 font-semibold text-md">{post.hook}</p>
           )}
+
+          <p className="text-gray-800">{post.content}</p>
 
           {post.image_url && (
             <img
               src={post.image_url}
-              alt="Post visual"
-              className="mt-2 w-full rounded-md object-cover"
+              alt="Uploaded"
+              className="w-full max-h-64 object-cover rounded"
             />
           )}
 
-          <p className="text-xs text-gray-400 mt-2">by {post.username || 'Anon'} • {new Date(post.created_at).toLocaleString()}</p>
+          {post.hashtags && (
+            <p className="text-sm text-blue-500">
+              {post.hashtags.split(',').map((tag, i) => (
+                <span key={i}>#{tag.trim()} </span>
+              ))}
+            </p>
+          )}
+
+          <p className="text-xs text-gray-500">
+            by {post.username || 'anonymous'} •{' '}
+            {new Date(post.created_at).toLocaleString()}
+          </p>
         </div>
       ))}
     </div>
