@@ -1,4 +1,10 @@
-// backend/index.ts
+// backend/api/ai-post-enhance.ts
+import express from 'express';
+import OpenAI from 'openai';
+
+const router = express.Router();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
 router.post('/api/ai-post-enhance', async (req, res) => {
   const { content } = req.body;
   if (!content) return res.status(400).json({ error: 'No content provided' });
@@ -27,3 +33,5 @@ ${content}
     res.status(500).json({ error: 'AI enhancement failed' });
   }
 });
+
+export default router;

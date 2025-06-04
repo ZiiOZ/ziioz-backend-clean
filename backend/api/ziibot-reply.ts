@@ -1,3 +1,10 @@
+// backend/api/ziibot-reply.ts
+import express from 'express';
+import OpenAI from 'openai';
+
+const router = express.Router();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
 router.post('/api/ziibot-reply', async (req, res) => {
   const { comment } = req.body;
   if (!comment) return res.status(400).json({ error: 'Missing comment' });
@@ -15,3 +22,5 @@ router.post('/api/ziibot-reply', async (req, res) => {
     res.status(500).json({ error: 'AI reply failed' });
   }
 });
+
+export default router;

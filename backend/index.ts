@@ -1,29 +1,28 @@
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Must come FIRST
-
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import aiPostEnhance from './api/ai-post-enhance';
+import ziiBotReply from './api/ziibot-reply';
 
-import ziibotReplyRoute from './api/ziibot-reply';
-import aiPostEnhanceRoute from './api/ai-post-enhance';
-import commentsRoute from './api/comments.api';
-
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', ziibotReplyRoute);
-app.use('/api', aiPostEnhanceRoute);
-app.use('/api', commentsRoute);
+// API routes
+app.use(aiPostEnhance);
+app.use(ziiBotReply);
 
-app.get('/', (_req, res) => {
+// Health check
+app.get('/', (req, res) => {
   res.send('ZiiOZ Backend is Live');
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log('[ZiiBot] OpenAI Key Loaded:', Boolean(process.env.OPENAI_API_KEY));
-  console.log(`ZiiOZ backend running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
