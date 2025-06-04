@@ -1,11 +1,8 @@
-import React from 'react';
-
-function NotFound() {
+export default function NotFound() {
   return (
-    <div className="p-4 text-center text-xl font-semibold text-red-600">
-      Page Not Found
+    <div style={{ padding: 40, fontSize: 20, textAlign: 'center' }}>
+      🚫 <strong>Page Not Found</strong>
+      <p>Oops! That link doesn't exist on ZiiOZ yet.</p>
     </div>
-  );
+  )
 }
-
-export default NotFound;

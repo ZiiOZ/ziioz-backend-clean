@@ -7,6 +7,9 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
+<div style={{ background: '#0077ff', color: '#fff', padding: '10px 16px', fontWeight: 600, textAlign: 'center' }}>
+  🚀 ZiiOZ Global Beta Launch – You’re early! Thanks for being part of it.
+</div>
 
 interface Post {
   id: number;
