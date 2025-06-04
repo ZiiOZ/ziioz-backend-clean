@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import PostBoostButton from './PostBoostButton';
+import PostBoostButton from './posts/PostBoostButton';
 
 interface Post {
   id: number;
