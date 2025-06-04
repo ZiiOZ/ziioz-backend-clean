@@ -79,6 +79,8 @@ export default function ZiiPostForm() {
         username: 'ZiiUser',
       };
 
+      console.log('🧾 Payload to insert:', payload);
+
       const { error } = await supabase.from('posts').insert([payload]);
 
       if (error) {
@@ -86,8 +88,6 @@ export default function ZiiPostForm() {
       } else {
         console.log('✅ Post submitted:', payload);
         alert('Post submitted!');
-
-        // Reset form
         setContent('');
         setHook('');
         setHashtags([]);
@@ -95,6 +95,8 @@ export default function ZiiPostForm() {
         setImageFile(null);
         setImageUrl(null);
       }
+    } catch (e) {
+      console.error('💥 Unexpected error:', e);
     } finally {
       setLoading(false);
     }
