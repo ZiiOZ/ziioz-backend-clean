@@ -11,7 +11,7 @@ interface Post {
   username?: string;
   created_at: string;
   boosts: number;
-  visible?: boolean;
+  visible: boolean;
 }
 
 export default function ZiiPostFeed() {
@@ -36,15 +36,21 @@ export default function ZiiPostFeed() {
   };
 
   return (
-    <div className="max-w-xl w-full mx-auto mt-6 px-4 space-y-6">
+    <div className="max-w-2xl mx-auto mt-6 space-y-6">
       <h2 className="text-xl font-bold">🧠 ZiiPosts</h2>
+
+      {posts.length === 0 && (
+        <div className="text-center text-gray-500 text-sm mt-10">
+          📭 No posts yet. Be the first to create something brilliant!
+        </div>
+      )}
 
       {posts.map((post) => (
         <div
           key={post.id}
           className="border rounded-lg p-4 shadow-sm bg-white space-y-2 relative"
         >
-          {/* Admin toggle visibility */}
+          {/* Admin toggle button */}
           {localStorage.getItem('ziioz_admin') === 'true' && (
             <button
               onClick={async () => {
@@ -70,10 +76,10 @@ export default function ZiiPostFeed() {
           )}
 
           {post.hook && (
-            <p className="text-indigo-600 font-semibold text-md break-words">{post.hook}</p>
+            <p className="text-indigo-600 font-semibold text-md">{post.hook}</p>
           )}
 
-          <p className="text-gray-800 text-sm break-words">{post.content}</p>
+          <p className="text-gray-800">{post.content}</p>
 
           {post.image_url && (
             <img
@@ -84,14 +90,14 @@ export default function ZiiPostFeed() {
           )}
 
           {post.hashtags && (
-            <p className="text-sm text-blue-500 flex flex-wrap gap-1">
+            <p className="text-sm text-blue-500">
               {post.hashtags.split(',').map((tag, i) => (
-                <span key={i}>#{tag.trim()}</span>
+                <span key={i}>#{tag.trim()} </span>
               ))}
             </p>
           )}
 
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <div className="flex items-center gap-2 mt-2">
             <PostBoostButton postId={post.id} />
             <span className="text-sm text-gray-500">{post.boosts} boosts</span>
           </div>
