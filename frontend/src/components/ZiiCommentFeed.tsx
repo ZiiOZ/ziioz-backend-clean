@@ -1,66 +1,122 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import PostBoostButton from './posts/PostBoostButton';
+import ZiiBotReplyButton from './ZiiBotReplyButton';
+import ZiiBotReply from './ZiiBotReply';
+import BoostButton from './BoostButton';
 
-interface Post {
+interface Comment {
   id: number;
+  post_id: string;
+  username: string;
   content: string;
-  hook?: string;
-  hashtags?: string;
-  image_url?: string;
-  username?: string;
   created_at: string;
   boosts: number;
-  visible?: boolean;
+  showZiiBotReply?: boolean;
+  replyText?: string;
 }
 
-export default function ZiiPostFeed() {
-  const [posts, setPosts] = useState<Post[]>([]);
+export default function ZiiCommentFeed({ postId }: { postId: string }) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    fetchComments();
+  }, [postId]);
 
-  const fetchPosts = async () => {
+  const fetchComments = async () => {
     const { data, error } = await supabase
-      .from('posts')
+      .from('comments')
       .select('*')
-      .eq('visible', true)
+      .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error loading posts:', error);
-    } else {
-      setPosts(data || []);
+    if (error) console.error('Error loading comments:', error);
+    else setComments(data || []);
+  };
+
+  const handleSubmit = async () => {
+    if (!newComment.trim()) return;
+    const { error } = await supabase.from('comments').insert([
+      {
+        post_id: postId,
+        username: username || 'anon',
+        content: newComment,
+      },
+    ]);
+    if (!error) {
+      setNewComment('');
+      fetchComments();
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-6 space-y-6">
-      <h2 className="text-xl font-bold">🧠 ZiiPosts</h2>
+    <div className="space-y-2 border-t mt-6 pt-4">
+      <input
+        className="w-full border p-2 rounded text-sm"
+        placeholder="Your name"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <textarea
+        className="w-full border p-2 rounded text-sm"
+        placeholder="Write a comment..."
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+      />
+      <button
+        onClick={handleSubmit}
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+      >
+        Submit Comment
+      </button>
 
-      {posts.map((post) => (
+      {comments.map((comment) => (
         <div
-          key={post.id}
-          className="border rounded-lg p-4 shadow-sm bg-white space-y-2 relative"
+          key={comment.id}
+          className={`mt-4 p-3 border rounded space-y-1 ${
+            comment.username === 'ZiiBot' ? 'bg-purple-50 border-purple-200' : 'bg-white'
+          }`}
         >
-          {/* Admin visibility toggle */}
-          {localStorage.getItem('ziioz_admin') === 'true' && (
-            <button
-              onClick={async () => {
-                const { data: current } = await supabase
-                  .from('posts')
-                  .select('visible')
-                  .eq('id', post.id)
-                  .single();
+          <p className="font-semibold flex items-center gap-2">
+            {comment.username === 'ZiiBot' ? (
+              <>
+                <span className="text-purple-600">🧠</span>
+                <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
+                  ZiiBot
+                </span>
+              </>
+            ) : (
+              comment.username
+            )}
+          </p>
 
-                const newState = !current?.visible;
+          <p className="text-sm">{comment.content}</p>
+          <p className="text-xs text-gray-500">
+            {new Date(comment.created_at).toLocaleString()}
+          </p>
 
-                const { error } = await supabase
-                  .from('posts')
-                  .update({ visible: newState })
-                  .eq('id', post.id);
+          <div className="flex items-center gap-2 mt-2">
+            <BoostButton commentId={comment.post_id} />
+            <span className="text-xs text-gray-600">{comment.boosts} boosts</span>
+          </div>
 
-                if (!error) fetchPosts();
-              }}
-              className="text-xs text-indigo-500 underline absolute
+          {comment.showZiiBotReply && comment.replyText && (
+            <ZiiBotReply reply={comment.replyText} />
+          )}
+
+          <ZiiBotReplyButton
+            comment={comment.content}
+            onReply={(replyText) => {
+              setComments((prev) =>
+                prev.map((c) =>
+                  c.id === comment.id ? { ...c, showZiiBotReply: true, replyText } : c
+                )
+              );
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
