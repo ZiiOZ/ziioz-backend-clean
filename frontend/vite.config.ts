@@ -7,6 +7,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: 'frontend/public/index.html', // 🔥 Explicit entry path
+    },
   },
   plugins: [react()],
 })
