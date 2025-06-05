@@ -72,12 +72,7 @@ export default function ZiiCommentFeed({ postId }: { postId: string }) {
       </button>
 
       {comments.map((comment) => (
-        <div
-          key={comment.id}
-          className={`mt-4 p-3 border rounded space-y-1 ${
-            comment.username === 'ZiiBot' ? 'bg-purple-50 border-purple-200' : 'bg-white'
-          }`}
-        >
+        <div key={comment.id} className="border-b pb-4 mb-4">
           <p className="font-semibold flex items-center gap-2">
             {comment.username === 'ZiiBot' ? (
               <>
@@ -87,17 +82,17 @@ export default function ZiiCommentFeed({ postId }: { postId: string }) {
                 </span>
               </>
             ) : (
-              comment.username
+              <span>@{comment.username}</span>
             )}
           </p>
 
-          <p className="text-sm">{comment.content}</p>
+          <p className="text-sm text-gray-800">{comment.content}</p>
           <p className="text-xs text-gray-500">
             {new Date(comment.created_at).toLocaleString()}
           </p>
 
           <div className="flex items-center gap-2 mt-2">
-            <BoostButton commentId={comment.post_id} />
+            <BoostButton commentId={comment.id} />
             <span className="text-xs text-gray-600">{comment.boosts} boosts</span>
           </div>
 
@@ -110,7 +105,9 @@ export default function ZiiCommentFeed({ postId }: { postId: string }) {
             onReply={(replyText) => {
               setComments((prev) =>
                 prev.map((c) =>
-                  c.id === comment.id ? { ...c, showZiiBotReply: true, replyText } : c
+                  c.id === comment.id
+                    ? { ...c, showZiiBotReply: true, replyText }
+                    : c
                 )
               );
             }}
