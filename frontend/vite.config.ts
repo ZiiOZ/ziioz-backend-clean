@@ -9,8 +9,8 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, 'frontend/public/index.html'), // 👈 THIS FIXES IT
-    },
+      input: 'public/index.html' // ✅ Correct: relative to root
+    }
   },
-  plugins: [react()],
+  plugins: [react()]
 })
