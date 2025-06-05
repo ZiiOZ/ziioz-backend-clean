@@ -4,12 +4,12 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  root: '.',                // frontend root is fine
-  publicDir: 'public',      // where index.html + static assets live
+  root: '.',                // root stays at frontend/
+  publicDir: 'public',      // use public folder
   build: {
-    outDir: 'dist',
+    outDir: 'dist',         // default output
     rollupOptions: {
-      input: 'public/index.html' // 🔑 Entry point for Vite/Render
+      input: 'public/index.html',  // 🔥 this is crucial
     }
   }
 });
