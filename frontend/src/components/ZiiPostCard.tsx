@@ -18,7 +18,7 @@ export default function ZiiPostCard({
   onRefresh,
 }: {
   post: Post;
-  onRefresh: () => void;
+  onRefresh?: () => void;
 }) {
   const [visible, setVisible] = useState(post.visible);
   const [boosts, setBoosts] = useState(post.boosts);
@@ -30,14 +30,21 @@ export default function ZiiPostCard({
       .eq('id', post.id);
     if (!error) {
       setVisible(!visible);
-      onRefresh();
+      onRefresh?.();
     }
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm('Are you sure you want to delete this post?');
+    if (!confirmed) return;
+
     const { error } = await supabase.from('posts').delete().eq('id', post.id);
     if (!error) {
-      onRefresh();
+      alert('Post deleted');
+      onRefresh?.();
+    } else {
+      alert('Failed to delete post');
+      console.error('Delete error:', error);
     }
   };
 
@@ -51,15 +58,9 @@ export default function ZiiPostCard({
 
   return (
     <div className="bg-white rounded-2xl shadow p-4">
-      <div className="text-xs text-gray-500">
-        {new Date(post.created_at).toLocaleString()}
-      </div>
-      <div className="text-sm font-medium text-gray-800 mb-1">
-        @{post.username || 'anonymous'}
-      </div>
-      {post.hook && (
-        <div className="text-lg font-semibold text-black mb-1">{post.hook}</div>
-      )}
+      <div className="text-xs text-gray-500">{new Date(post.created_at).toLocaleString()}</div>
+      <div className="text-sm font-medium text-gray-800 mb-1">@{post.username || 'anonymous'}</div>
+      {post.hook && <div className="text-lg font-semibold text-black mb-1">{post.hook}</div>}
       <p className="text-gray-700 mb-2 whitespace-pre-wrap">{post.content}</p>
 
       {post.image_url && (
@@ -80,16 +81,10 @@ export default function ZiiPostCard({
 
       {localStorage.getItem('ziioz_admin') === 'true' && (
         <div className="flex gap-4 mt-2">
-          <button
-            onClick={handleToggleVisibility}
-            className="text-sm text-blue-600 hover:underline"
-          >
+          <button onClick={handleToggleVisibility} className="text-sm text-blue-600 hover:underline">
             {visible ? 'Hide' : 'Show'}
           </button>
-          <button
-            onClick={handleDelete}
-            className="text-sm text-red-600 hover:underline"
-          >
+          <button onClick={handleDelete} className="text-sm text-red-600 hover:underline">
             Delete
           </button>
         </div>
@@ -102,12 +97,9 @@ export default function ZiiPostCard({
         >
           Boost ({boosts})
         </button>
-
         <span
           className={`px-4 py-1 rounded-full text-xs ${
-            visible
-              ? 'bg-green-500 text-white'
-              : 'bg-gray-400 text-white'
+            visible ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'
           }`}
         >
           {visible ? 'Visible' : 'Hidden'}
