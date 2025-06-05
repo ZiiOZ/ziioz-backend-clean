@@ -1,113 +1,91 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import ZiiBotReplyButton from './ZiiBotReplyButton';
-import ZiiBotReply from './ZiiBotReply';
-import BoostButton from './BoostButton';
+import PostBoostButton from './posts/PostBoostButton';
 
-interface Comment {
+interface Post {
   id: number;
-  post_id: string;
-  username: string;
   content: string;
+  hook?: string;
+  hashtags?: string;
+  image_url?: string;
+  username?: string;
   created_at: string;
   boosts: number;
-  showZiiBotReply?: boolean;
-  replyText?: string;
 }
 
-export default function ZiiCommentFeed({ postId }: { postId: string }) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState('');
-  const [username, setUsername] = useState('');
+export default function ZiiPostFeed() {
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    fetchComments();
-  }, [postId]);
+    fetchPosts();
+  }, []);
 
-  const fetchComments = async () => {
+  const fetchPosts = async () => {
     const { data, error } = await supabase
-      .from('comments')
+      .from('posts')
       .select('*')
-      .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
-    if (error) console.error('Error loading comments:', error);
-    else setComments(data || []);
-  };
-
-  const handleSubmit = async () => {
-    if (!newComment.trim()) return;
-    const { error } = await supabase.from('comments').insert([
-      {
-        post_id: postId,
-        username: username || 'anon',
-        content: newComment,
-      },
-    ]);
-    if (!error) {
-      setNewComment('');
-      fetchComments();
+    if (error) {
+      console.error('Error loading posts:', error);
+    } else {
+      setPosts(data || []);
     }
   };
 
   return (
-    <div className="space-y-2 border-t mt-4 pt-2">
-      <input
-        className="w-full border p-1 rounded"
-        placeholder="Your name"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <textarea
-        className="w-full border p-2 rounded"
-        placeholder="Write a comment..."
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-      />
-      <button onClick={handleSubmit} className="px-4 py-1 bg-blue-500 text-white rounded">
-        Submit Comment
-      </button>
+    <div className="max-w-2xl mx-auto mt-6 space-y-6">
+      <h2 className="text-xl font-bold">🧠 ZiiPosts</h2>
 
-      {comments.map((comment) => (
+      {posts.map((post) => (
         <div
-          key={comment.id}
-          className={`mt-3 p-2 border rounded ${
-            comment.username === 'ZiiBot' ? 'bg-purple-50 border-purple-200' : 'bg-white'
-          }`}
+          key={post.id}
+          className="border rounded-lg p-4 shadow-sm bg-white space-y-2 relative"
         >
-          <p className="font-semibold flex items-center gap-2">
-            {comment.username === 'ZiiBot' ? (
-              <>
-                <span className="text-purple-600">🧠</span>
-                <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">ZiiBot</span>
-              </>
-            ) : (
-              comment.username
-            )}
-          </p>
-
-          <p>{comment.content}</p>
-          <p className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleString()}</p>
-
-          <div className="flex items-center gap-2 mt-1">
-            <BoostButton commentId={comment.post_id} />
-            <span className="text-sm text-gray-500">{comment.boosts} boosts</span>
-          </div>
-
-          {comment.showZiiBotReply && comment.replyText && (
-            <ZiiBotReply reply={comment.replyText} />
+          {/* Admin delete button */}
+          {localStorage.getItem('ziioz_admin') === 'true' && (
+            <button
+              onClick={async () => {
+                const { error } = await supabase.from('posts').delete().eq('id', post.id);
+                if (!error) fetchPosts();
+              }}
+              className="absolute top-2 right-2 text-xs text-red-500 underline"
+            >
+              Delete Post
+            </button>
           )}
 
-          <ZiiBotReplyButton
-            comment={comment.content}
-            onReply={(replyText) => {
-              setComments((prev) =>
-                prev.map((c) =>
-                  c.id === comment.id ? { ...c, showZiiBotReply: true, replyText } : c
-                )
-              );
-            }}
-          />
+          {post.hook && (
+            <p className="text-indigo-600 font-semibold text-md">{post.hook}</p>
+          )}
+
+          <p className="text-gray-800">{post.content}</p>
+
+          {post.image_url && (
+            <img
+              src={post.image_url}
+              alt="Uploaded"
+              className="w-full max-h-64 object-cover rounded"
+            />
+          )}
+
+          {post.hashtags && (
+            <p className="text-sm text-blue-500">
+              {post.hashtags.split(',').map((tag, i) => (
+                <span key={i}>#{tag.trim()} </span>
+              ))}
+            </p>
+          )}
+
+          <div className="flex items-center gap-2 mt-2">
+            <PostBoostButton postId={post.id} />
+            <span className="text-sm text-gray-500">{post.boosts} boosts</span>
+          </div>
+
+          <p className="text-xs text-gray-500">
+            by {post.username || 'anonymous'} •{' '}
+            {new Date(post.created_at).toLocaleString()}
+          </p>
         </div>
       ))}
     </div>
