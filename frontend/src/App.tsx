@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import ZiiPostForm from './components/ZiiPostForm'
-import ZiiPostFeed from './components/ZiiPostFeed'
-import NotFound from './components/NotFound'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ZiiPostForm from './components/ZiiPostForm';
+import ZiiPostFeed from './components/ZiiPostFeed';
+import NotFound from './components/NotFound';
+import AdminDashboard from './pages/AdminDashboard';
 
 function ZiiPostPage() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/ziiposts" />} />
         <Route path="/ziiposts" element={<ZiiPostPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
