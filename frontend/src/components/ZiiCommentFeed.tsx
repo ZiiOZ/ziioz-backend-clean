@@ -69,8 +69,23 @@ export default function ZiiCommentFeed({ postId }: { postId: string }) {
       </button>
 
       {comments.map((comment) => (
-        <div key={comment.id} className="mt-3 p-2 border rounded">
-          <p className="font-semibold">{comment.username}</p>
+        <div
+          key={comment.id}
+          className={`mt-3 p-2 border rounded ${
+            comment.username === 'ZiiBot' ? 'bg-purple-50 border-purple-200' : 'bg-white'
+          }`}
+        >
+          <p className="font-semibold flex items-center gap-2">
+            {comment.username === 'ZiiBot' ? (
+              <>
+                <span className="text-purple-600">🧠</span>
+                <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">ZiiBot</span>
+              </>
+            ) : (
+              comment.username
+            )}
+          </p>
+
           <p>{comment.content}</p>
           <p className="text-xs text-gray-500">{new Date(comment.created_at).toLocaleString()}</p>
 
