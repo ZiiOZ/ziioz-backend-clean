@@ -1,66 +1,117 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 
-interface ZiiPostCardProps {
-  post: {
-    id: string;
-    content: string;
-    created_at: string;
-    image_url: string | null;
-    username: string;
-  };
+interface Post {
+  id: number;
+  content: string;
+  hook?: string;
+  hashtags?: string;
+  image_url?: string;
+  username?: string;
+  created_at: string;
+  boosts: number;
+  visible: boolean;
 }
 
-export default function ZiiPostCard({ post }: ZiiPostCardProps) {
-  const [timeAgo, setTimeAgo] = useState('');
+export default function ZiiPostCard({
+  post,
+  onRefresh,
+}: {
+  post: Post;
+  onRefresh: () => void;
+}) {
+  const [visible, setVisible] = useState(post.visible);
+  const [boosts, setBoosts] = useState(post.boosts);
 
-  useEffect(() => {
-    const date = new Date(post.created_at);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    const minutes = Math.floor(diff / 60);
-    const hours = Math.floor(diff / 3600);
-    const days = Math.floor(diff / 86400);
+  const handleToggleVisibility = async () => {
+    const { error } = await supabase
+      .from('posts')
+      .update({ visible: !visible })
+      .eq('id', post.id);
+    if (!error) {
+      setVisible(!visible);
+      onRefresh();
+    }
+  };
 
-    if (diff < 60) setTimeAgo(`${diff}s ago`);
-    else if (minutes < 60) setTimeAgo(`${minutes}m ago`);
-    else if (hours < 24) setTimeAgo(`${hours}h ago`);
-    else setTimeAgo(`${days}d ago`);
-  }, [post.created_at]);
+  const handleDelete = async () => {
+    const { error } = await supabase.from('posts').delete().eq('id', post.id);
+    if (!error) {
+      onRefresh();
+    }
+  };
+
+  const boostPost = async () => {
+    const { error } = await supabase
+      .from('posts')
+      .update({ boosts: boosts + 1 })
+      .eq('id', post.id);
+    if (!error) setBoosts(boosts + 1);
+  };
 
   return (
-    <div className="bg-white rounded-2xl shadow p-4 mb-4 max-w-xl w-full mx-auto">
-      <div className="flex items-center space-x-3 mb-2">
-        <div className="w-9 h-9 rounded-full bg-gray-300" />
-        <div>
-          <p className="text-sm font-semibold">{post.username || 'Unknown User'}</p>
-          <p className="text-xs text-gray-500">{timeAgo}</p>
-        </div>
+    <div className="bg-white rounded-2xl shadow p-4">
+      <div className="text-xs text-gray-500">
+        {new Date(post.created_at).toLocaleString()}
       </div>
-
-      <p className="text-base text-gray-800 mb-3">{post.content}</p>
+      <div className="text-sm font-medium text-gray-800 mb-1">
+        @{post.username || 'anonymous'}
+      </div>
+      {post.hook && (
+        <div className="text-lg font-semibold text-black mb-1">{post.hook}</div>
+      )}
+      <p className="text-gray-700 mb-2 whitespace-pre-wrap">{post.content}</p>
 
       {post.image_url && (
         <img
           src={post.image_url}
-          alt="Post"
-          className="rounded-xl mb-3 max-h-[300px] object-cover w-full"
+          alt="Post media"
+          className="rounded-lg w-full h-auto object-cover mb-3"
         />
       )}
 
-      <div className="flex items-center space-x-4 mt-2">
-        <a
-          href={`/comments/${post.id}`}
-          className="text-blue-500 text-sm hover:underline"
+      {post.hashtags && (
+        <div className="text-xs text-blue-500 mb-2">
+          {post.hashtags.split(',').map((tag, i) => (
+            <span key={i} className="mr-2">#{tag.trim()}</span>
+          ))}
+        </div>
+      )}
+
+      {localStorage.getItem('ziioz_admin') === 'true' && (
+        <div className="flex gap-4 mt-2">
+          <button
+            onClick={handleToggleVisibility}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            {visible ? 'Hide' : 'Show'}
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-sm text-red-600 hover:underline"
+          >
+            Delete
+          </button>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mt-3">
+        <button
+          onClick={boostPost}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-full text-xs"
         >
-          💬 Comment
-        </a>
-        <a
-          href={`/boost/${post.id}`}
-          className="text-pink-500 text-sm hover:underline"
+          Boost ({boosts})
+        </button>
+
+        <span
+          className={`px-4 py-1 rounded-full text-xs ${
+            visible
+              ? 'bg-green-500 text-white'
+              : 'bg-gray-400 text-white'
+          }`}
         >
-          🚀 Boost
-        </a>
+          {visible ? 'Visible' : 'Hidden'}
+        </span>
       </div>
     </div>
   );
