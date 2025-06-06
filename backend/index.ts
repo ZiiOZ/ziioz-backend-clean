@@ -5,34 +5,34 @@ import { createClient } from '@supabase/supabase-js';
 
 import aiPostEnhance from './api/ai-post-enhance';
 import spinPost from './api/spin-post';
-import ziibotReply from './api/ziibot-reply';
-app.use(ziibotReply); // ✅ mounts /api/ziibot-reply
+import ziiBotReply from './api/ziibot-reply';
 
-
-dotenv.config(); // ✅ Load .env first
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Supabase Admin Client
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ Routes
+// ✅ API Routes
 app.use(aiPostEnhance);
 app.use(spinPost);
-app.use(ziibotReply);
+app.use(ziiBotReply);
 
 // ✅ Health Check
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send('ZiiOZ Backend is Live');
 });
 
-// ✅ Boost Endpoint
+// ✅ Boost Comment Endpoint
 app.post('/api/boost-comment', async (req, res) => {
   const { commentId, userSession } = req.body;
 
@@ -46,24 +46,24 @@ app.post('/api/boost-comment', async (req, res) => {
     .eq('comment_id', commentId)
     .eq('user_session', userSession);
 
-  if (fetchError) return res.status(500).json({ error: 'Lookup failed' });
+  if (fetchError) return res.status(500).json({ error: 'Boost lookup failed' });
   if (existing.length > 0) return res.status(403).json({ error: 'Already boosted' });
 
   const { error: insertError } = await supabase
     .from('comment_boosts')
     .insert([{ comment_id: commentId, user_session: userSession }]);
 
-  if (insertError) return res.status(500).json({ error: 'Insert failed' });
+  if (insertError) return res.status(500).json({ error: 'Boost insert failed' });
 
   const { error: updateError } = await supabase
     .rpc('increment_comment_boosts', { comment_id_input: commentId });
 
-  if (updateError) return res.status(500).json({ error: 'Increment failed' });
+  if (updateError) return res.status(500).json({ error: 'Boost increment failed' });
 
   res.json({ success: true });
 });
 
-// ✅ Start Server
+// ✅ Start server
 app.listen(PORT, () => {
-  console.log(`ZiiOZ Backend running on http://localhost:${PORT}`);
+  console.log(`ZiiOZ Backend running on ${PORT}`);
 });
