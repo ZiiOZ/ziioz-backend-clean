@@ -1,5 +1,6 @@
 import express from 'express';
 import OpenAI from 'openai';
+import { supabase } from '../supabaseClient'; // ✅ fix 1: import supabase
 
 const router = express.Router();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
@@ -28,7 +29,6 @@ router.post('/api/ziibot-reply', async (req, res) => {
 
     const reply = response.choices?.[0]?.message?.content?.trim();
 
-    // Save to Supabase as a new comment from ZiiBot
     const { error } = await supabase
       .from('comments')
       .insert([
@@ -51,3 +51,4 @@ router.post('/api/ziibot-reply', async (req, res) => {
   }
 });
 
+export default router; // ✅ fix 2: export default router
