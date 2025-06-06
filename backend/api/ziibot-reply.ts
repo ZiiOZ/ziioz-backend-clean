@@ -1,6 +1,6 @@
 import express from 'express';
 import OpenAI from 'openai';
-import { supabase } from '../supabaseClient'; // ✅ fix 1: import supabase
+import { supabase } from '../supabaseServerClient';
 
 const router = express.Router();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
