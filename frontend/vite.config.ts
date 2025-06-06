@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
-  root: 'frontend', // ✅ matches the folder containing index.html
-  publicDir: 'frontend/public',
+  root: 'frontend',
+  publicDir: path.resolve(__dirname, 'frontend/public'),
   build: {
-    outDir: '../dist', // ✅ places final build one level up, outside /frontend
+    outDir: path.resolve(__dirname, 'dist'),
     emptyOutDir: true,
   },
   plugins: [react()],
