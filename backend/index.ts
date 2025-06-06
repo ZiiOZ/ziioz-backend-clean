@@ -5,65 +5,57 @@ import { createClient } from '@supabase/supabase-js';
 
 import aiPostEnhance from './api/ai-post-enhance';
 import spinPost from './api/spin-post';
-import ziiBotReply from './api/ziibot-reply';
+import ziibotReply from './api/ziibot-reply'; // ✅ Must be named and exist
 
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ✅ Supabase Admin Client
-const supabase = createClient(
+export const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ API Routes
+// ✅ Routes
 app.use(aiPostEnhance);
 app.use(spinPost);
-app.use(ziiBotReply);
+app.use(ziibotReply);
 
-// ✅ Health Check
-app.get('/', (_, res) => {
-  res.send('ZiiOZ Backend is Live');
-});
-
-// ✅ Boost Comment Endpoint
+// ✅ Boost Endpoint (temporary placement)
 app.post('/api/boost-comment', async (req, res) => {
   const { commentId, userSession } = req.body;
-
   if (!commentId || !userSession) {
-    return res.status(400).json({ error: 'Missing commentId or userSession' });
+    return res.status(400).json({ error: 'Missing fields' });
   }
 
-  const { data: existing, error: fetchError } = await supabase
+  const { data: existing } = await supabase
     .from('comment_boosts')
     .select('id')
     .eq('comment_id', commentId)
     .eq('user_session', userSession);
 
-  if (fetchError) return res.status(500).json({ error: 'Boost lookup failed' });
-  if (existing.length > 0) return res.status(403).json({ error: 'Already boosted' });
+  if (existing.length > 0) {
+    return res.status(403).json({ error: 'Already boosted' });
+  }
 
-  const { error: insertError } = await supabase
+  await supabase
     .from('comment_boosts')
     .insert([{ comment_id: commentId, user_session: userSession }]);
 
-  if (insertError) return res.status(500).json({ error: 'Boost insert failed' });
+  await supabase.rpc('increment_comment_boosts', { comment_id_input: commentId });
 
-  const { error: updateError } = await supabase
-    .rpc('increment_comment_boosts', { comment_id_input: commentId });
-
-  if (updateError) return res.status(500).json({ error: 'Boost increment failed' });
-
-  res.json({ success: true });
+  return res.json({ success: true });
 });
 
-// ✅ Start server
+// ✅ Health Check
+app.get('/', (req, res) => {
+  res.send('ZiiOZ Backend is LIVE ✅');
+});
+
 app.listen(PORT, () => {
-  console.log(`ZiiOZ Backend running on ${PORT}`);
+  console.log(`ZiiOZ backend running at http://localhost:${PORT}`);
 });
