@@ -13,6 +13,8 @@ export default function ZiiBotReplyButton({
 
   const handleClick = async () => {
     setLoading(true);
+    console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ziibot-reply`, {
         method: 'POST',
