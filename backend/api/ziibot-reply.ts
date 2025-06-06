@@ -5,21 +5,49 @@ const router = express.Router();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 router.post('/api/ziibot-reply', async (req, res) => {
-  const { comment } = req.body;
-  if (!comment) return res.status(400).json({ error: 'Missing comment' });
+  const { comment, commentId } = req.body;
+
+  if (!comment || !commentId) {
+    return res.status(400).json({ error: 'Missing comment or commentId' });
+  }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: `Reply to this comment: "${comment}"` }],
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are ZiiBot, a sharp, helpful, and cheeky assistant.',
+        },
+        {
+          role: 'user',
+          content: comment,
+        },
+      ],
     });
 
-    const reply = completion.choices[0]?.message?.content?.trim();
+    const reply = response.choices?.[0]?.message?.content?.trim();
+
+    // Save to Supabase as a new comment from ZiiBot
+    const { error } = await supabase
+      .from('comments')
+      .insert([
+        {
+          post_id: commentId,
+          username: 'ZiiBot',
+          content: reply,
+        },
+      ]);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(500).json({ error: 'Failed to store reply' });
+    }
+
     res.json({ reply });
   } catch (err) {
-    console.error('ZiiBot reply error:', err);
-    res.status(500).json({ error: 'Failed to generate reply' });
+    console.error('[ZiiBot Reply Error]', err);
+    res.status(500).json({ error: 'AI failed to generate reply' });
   }
 });
 
-export default router;

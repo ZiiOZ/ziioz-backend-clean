@@ -1,41 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 export default function BoostButton({ commentId }: { commentId: string }) {
-  const [status, setStatus] = useState('');
+  const [boosted, setBoosted] = useState(false);
+  const [boosts, setBoosts] = useState(0);
+
+  useEffect(() => {
+    // Check if already boosted this session
+    const boostedComments = JSON.parse(localStorage.getItem('boostedComments') || '[]');
+    if (boostedComments.includes(commentId)) {
+      setBoosted(true);
+    }
+
+    // Fetch current boost count
+    const fetchBoosts = async () => {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('boosts')
+        .eq('id', commentId)
+        .single();
+      if (!error && data) setBoosts(data.boosts);
+    };
+
+    fetchBoosts();
+  }, [commentId]);
 
   const handleBoost = async () => {
-    const key = 'ziioz_boost_count';
-    const currentCount = parseInt(localStorage.getItem(key) || '0');
-
-    if (currentCount >= 3) {
-      setStatus('🔒 Join ZiiOZ to boost more!');
+    if (boosted) {
+      alert('You’ve already boosted this comment!');
       return;
     }
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/boost-comment`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ commentId, userSession: localStorage.getItem('ziioz_session_id') || 'anon' }),
-    });
+    const { error } = await supabase
+      .from('comments')
+      .update({ boosts: boosts + 1 })
+      .eq('id', commentId);
 
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem(key, String(currentCount + 1));
-      setStatus('✨ Boosted!');
-    } else {
-      setStatus(data.error || '❌ Error');
+    if (!error) {
+      setBoosts(boosts + 1);
+      setBoosted(true);
+      const updated = JSON.parse(localStorage.getItem('boostedComments') || '[]');
+      updated.push(commentId);
+      localStorage.setItem('boostedComments', JSON.stringify(updated));
     }
   };
 
   return (
-    <div className="flex flex-col items-start">
-      <button
-        onClick={handleBoost}
-        className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600"
-      >
-        Boost
-      </button>
-      {status && <span className="text-xs mt-1 text-gray-600">{status}</span>}
-    </div>
+    <button
+      onClick={handleBoost}
+      className={`px-3 py-1 rounded-full text-xs ${
+        boosted ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+      } text-white`}
+      disabled={boosted}
+    >
+      Boost ({boosts})
+    </button>
   );
 }
