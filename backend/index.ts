@@ -38,7 +38,8 @@ app.post('/api/boost-comment', async (req, res) => {
     .eq('comment_id', commentId)
     .eq('user_session', userSession);
 
-  if (existing?.length > 0) {
+  if ((existing || []).length > 0) {
+
 
     return res.status(403).json({ error: 'Already boosted' });
   }
