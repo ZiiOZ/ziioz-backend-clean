@@ -6,6 +6,8 @@ import { createClient } from '@supabase/supabase-js';
 import aiPostEnhance from './api/ai-post-enhance';
 import spinPost from './api/spin-post';
 import ziibotReply from './api/ziibot-reply';
+app.use(ziibotReply); // ✅ mounts /api/ziibot-reply
+
 
 dotenv.config(); // ✅ Load .env first
 
