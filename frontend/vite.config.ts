@@ -5,13 +5,12 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   publicDir: 'public',
+  root: '.', // ensures it looks at root for index.html
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
+    rollupOptions: {
+      input: path.resolve(__dirname, 'index.html'),
     },
   },
 });
