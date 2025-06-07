@@ -3,9 +3,12 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  publicDir: 'public',
+  root: '.', // project root
+  publicDir: 'public', // correct public path
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    rollupOptions: {
+      input: 'public/index.html' // 🛠️ This is the fix!
+    }
   }
 })
