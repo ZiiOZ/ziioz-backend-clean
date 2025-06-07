@@ -5,13 +5,15 @@ import NotFound from './components/NotFound';
 import AdminDashboard from './pages/AdminDashboard';
 
 function ZiiPostPage() {
+  console.log('✅ ZiiPostPage loaded');
+
   return (
-    <div>
-      <ZiiPostForm />
-      <ZiiPostFeed />
+    <div style={{ padding: 40 }}>
+      <h1>ZiiPostPage test render ✅</h1>
     </div>
   );
 }
+
 
 export default function App() {
   return (
