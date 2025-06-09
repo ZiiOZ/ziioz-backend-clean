@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './App.css';
+import UserAvatar from './UserAvatar';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -12,6 +13,13 @@ function App() {
         <h1 className="text-4xl font-bold text-blue-600 mb-4">
           Tailwind is Working!
         </h1>
+
+        {/* ✅ Avatar Test */}
+        <div className="mb-4 flex items-center space-x-4">
+          <UserAvatar />
+          <UserAvatar imageUrl="https://i.pravatar.cc/100" />
+        </div>
+
         <button
           onClick={() => setCount((count) => count + 1)}
           className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -19,12 +27,12 @@ function App() {
           count is {count}
         </button>
       </div>
-      
+
       <p className="read-the-docs text-center mt-4">
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
