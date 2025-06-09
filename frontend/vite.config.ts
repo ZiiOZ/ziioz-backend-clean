@@ -1,14 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  root: '.', // project root
-  publicDir: 'public', // correct public path
-  build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: 'public/index.html' // 🛠️ This is the fix!
-    }
-  }
 })
