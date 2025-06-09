@@ -1,35 +1,36 @@
-import PostCard from './PostCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import UserAvatar from './UserAvatar';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ScrollToTop from './ScrollToTop';
 import BoostButton from './BoostButton';
 import ZiiPostForm from './ZiiPostForm';
+import PostCard from './PostCard';
 import AuthForm from './AuthForm';
+import { supabase } from './supabaseClient';
 
 function App() {
   const [count, setCount] = useState(0);
-  const [posts, setPosts] = useState([
-    {
-      id: '1',
-      content: 'Welcome to ZiiOZ! 🚀',
-      imageUrl: '',
-      visible: true,
-    },
-    {
-      id: '2',
-      content: 'This is a hidden sample post.',
-      imageUrl: 'https://picsum.photos/400/200',
-      visible: false,
-    },
-  ]);
+  const [posts, setPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) console.error(error);
+      else setPosts(data);
+    };
+
+    fetchPosts();
+  }, []);
 
   return (
     <Router>
       <ScrollToTop />
       <Routes>
-        {/* ✅ Home Route */}
         <Route
           path="/"
           element={
@@ -87,7 +88,6 @@ function App() {
           }
         />
 
-        {/* ✅ Auth Route */}
         <Route path="/auth" element={<AuthForm />} />
       </Routes>
     </Router>
