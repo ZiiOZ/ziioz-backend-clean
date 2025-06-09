@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 
 import aiPostEnhance from './api/ai-post-enhance';
 import spinPost from './api/spin-post';
-import ziibotReply from './api/ziibot-reply'; // ✅ Must be named and exist
+import ziibotReply from './api/ziibot-reply'; // ✅ Handles /api/ai-reply route inside
 
 dotenv.config();
 const app = express();
@@ -25,9 +25,10 @@ app.use(aiPostEnhance);
 app.use(spinPost);
 app.use(ziibotReply);
 
-// ✅ Boost Endpoint (temporary placement)
+// ✅ Boost Endpoint (safe and clean)
 app.post('/api/boost-comment', async (req, res) => {
   const { commentId, userSession } = req.body;
+
   if (!commentId || !userSession) {
     return res.status(400).json({ error: 'Missing fields' });
   }
@@ -39,8 +40,6 @@ app.post('/api/boost-comment', async (req, res) => {
     .eq('user_session', userSession);
 
   if ((existing || []).length > 0) {
-
-
     return res.status(403).json({ error: 'Already boosted' });
   }
 

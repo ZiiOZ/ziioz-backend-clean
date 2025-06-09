@@ -3,11 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import UserAvatar from './UserAvatar';
 import ScrollToTop from './ScrollToTop';
-import BoostButton from './BoostButton'; // ✅ works IF BoostButton.tsx is in `src/`
+import BoostButton from './comments/BoostButton';
 import ZiiPostForm from './ZiiPostForm';
 import PostCard from './PostCard';
 import AuthForm from './AuthForm';
 import { supabase } from './supabaseClient';
+import ZiiPostFeed from './ZiiPostFeed';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -55,28 +56,10 @@ function App() {
                 count is {count}
               </button>
 
-              {posts.length === 0 ? (
-                <div className="text-center text-gray-500 text-xl mt-4">
-                  🫠 Nothing here yet... Be the first to post something amazing!
-                </div>
-              ) : (
-                <div className="w-full max-w-md mt-4">
-                  {posts.map((post) => (
-                    <PostCard
-                      key={post.id}
-                      post={post}
-                      onDelete={(id) => setPosts(posts.filter((p) => p.id !== id))}
-                      onToggleVisibility={(id) =>
-                        setPosts((prev) =>
-                          prev.map((p) =>
-                            p.id === id ? { ...p, visible: !p.visible } : p
-                          )
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              )}
+              {/* ✅ Inject ZiiPostFeed here */}
+              <div className="w-full max-w-md mt-6">
+                <ZiiPostFeed />
+              </div>
 
               <div className="mt-6 w-full max-w-md">
                 <BoostButton postId="test-post-001" />
@@ -87,7 +70,6 @@ function App() {
             </div>
           }
         />
-
         <Route path="/auth" element={<AuthForm />} />
       </Routes>
     </Router>
