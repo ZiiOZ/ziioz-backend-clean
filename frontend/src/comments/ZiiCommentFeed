@@ -1,94 +1,93 @@
-import { useState } from 'react';
-import { supabase } from '../supabaseClient';
-import ZiiCommentFeed from './comments/ZiiCommentFeed';
+import { useEffect, useState } from 'react';
+import { supabase } from '../../supabaseClient';
 
-interface Post {
+interface Comment {
   id: number;
+  post_id: string;
+  username: string;
   content: string;
-  image_url?: string;
-  boosts?: number;
-  visible?: boolean;
-  hook?: string;
-  hashtags?: string;
-  username?: string;
+  created_at: string;
 }
 
-export default function PostCard({ post }: { post: Post }) {
-  const [isVisible, setIsVisible] = useState(post.visible ?? true);
-  const [deleted, setDeleted] = useState(false);
+export default function ZiiCommentFeed({ postId }: { postId: string }) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [username, setUsername] = useState('');
 
-  const handleToggleVisibility = async () => {
-    const { error } = await supabase
-      .from('posts')
-      .update({ visible: !isVisible })
-      .eq('id', post.id);
+  useEffect(() => {
+    fetchComments();
+  }, [postId]);
 
-    if (!error) setIsVisible(!isVisible);
-    else console.error('Visibility toggle failed', error);
+  const fetchComments = async () => {
+    const { data, error } = await supabase
+      .from('comments')
+      .select('*')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
+
+    if (error) console.error('Error loading comments:', error);
+    else setComments(data);
   };
 
-  const handleDelete = async () => {
-    const { error } = await supabase.from('posts').delete().eq('id', post.id);
-    if (!error) setDeleted(true);
-    else console.error('Post deletion failed', error);
-  };
+  const handleSubmit = async () => {
+    if (!newComment.trim()) return;
 
-  if (deleted) return null;
-  if (!isVisible) return null;
+    const { error } = await supabase.from('comments').insert([
+      {
+        post_id: postId,
+        username: username || 'Anonymous',
+        content: newComment,
+      },
+    ]);
+
+    if (!error) {
+      setNewComment('');
+      fetchComments();
+    } else {
+      console.error('Failed to submit comment:', error);
+    }
+  };
 
   return (
-    <div className="border rounded p-4 shadow mb-4 bg-white">
-      <div className="flex justify-between items-center mb-2">
-        <div className="text-lg font-semibold">📢 Public Post</div>
-        <div className="flex gap-2">
-          <button
-            className="bg-yellow-400 text-black text-xs px-2 py-1 rounded"
-            onClick={handleToggleVisibility}
+    <div className="mt-4 border-t pt-4">
+      <h3 className="text-md font-semibold mb-2">💬 Comments</h3>
+
+      <div className="space-y-2 mb-4">
+        {comments.map((comment) => (
+          <div
+            key={comment.id}
+            className="border border-gray-200 rounded p-2 bg-gray-50"
           >
-            {isVisible ? 'Hide' : 'Unhide'}
-          </button>
-          <button
-            className="bg-red-500 text-white text-xs px-2 py-1 rounded"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-        </div>
+            <div className="text-sm font-bold text-gray-700">{comment.username}</div>
+            <div className="text-sm text-gray-800">{comment.content}</div>
+          </div>
+        ))}
+        {comments.length === 0 && (
+          <div className="text-gray-500 text-sm">No comments yet.</div>
+        )}
       </div>
 
-      {post.image_url && (
-        <img
-          src={post.image_url}
-          alt="Post"
-          className="rounded mb-2 w-full max-h-60 object-cover"
-        />
-      )}
+      <input
+        type="text"
+        className="w-full border px-2 py-1 rounded mb-2"
+        placeholder="Your name (optional)"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
 
-      {post.hook && (
-        <div className="text-sm text-purple-700 font-semibold italic mb-1">
-          {post.hook}
-        </div>
-      )}
+      <textarea
+        className="w-full border px-2 py-1 rounded mb-2"
+        placeholder="Write a comment..."
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+      />
 
-      <div className="text-gray-800 text-base mb-2">{post.content}</div>
-
-      {post.hashtags && (
-        <div className="text-xs text-gray-600 italic mb-1">
-          #{post.hashtags.split(',').join(' #')}
-        </div>
-      )}
-
-      {post.username && (
-        <div className="text-xs text-gray-500 mb-2">👤 Posted by: {post.username}</div>
-      )}
-
-      {typeof post.boosts === 'number' && (
-        <div className="text-xs text-green-600 font-bold mb-2">
-          🚀 Boosts: {post.boosts}
-        </div>
-      )}
-
-      <ZiiCommentFeed postId={post.id.toString()} />
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        onClick={handleSubmit}
+      >
+        Submit Comment
+      </button>
     </div>
   );
 }
