@@ -1,4 +1,3 @@
-import ZiiPay from './ZiiPay';
 import PostCard from './PostCard';
 import { useState } from 'react';
 import './App.css';
@@ -8,9 +7,6 @@ import ScrollToTop from './ScrollToTop';
 import BoostButton from './BoostButton';
 import ZiiPostForm from './ZiiPostForm';
 import AuthForm from './AuthForm';
-
-<Route path="/auth" element={<AuthForm />} />
-
 
 function App() {
   const [count, setCount] = useState(0);
@@ -91,8 +87,8 @@ function App() {
           }
         />
 
-        {/* ✅ ZiiPay Stub Route */}
-        <Route path="/ziipay" element={<ZiiPay />} />
+        {/* ✅ Auth Route */}
+        <Route path="/auth" element={<AuthForm />} />
       </Routes>
     </Router>
   );
