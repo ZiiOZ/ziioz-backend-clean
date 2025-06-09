@@ -6,7 +6,7 @@ import ScrollToTop from './ScrollToTop';
 import BoostButton from './BoostButton'; // ✅ works IF BoostButton.tsx is in `src/`
 import ZiiPostForm from './ZiiPostForm';
 import PostCard from './PostCard';
-import AuthForm from './AuthForm';
+import { AuthForm } from './AuthForm';
 import { supabase } from './supabaseClient';
 
 function App() {
