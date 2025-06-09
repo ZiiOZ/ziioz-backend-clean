@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import UserAvatar from './UserAvatar';
 import ScrollToTop from './ScrollToTop';
-import BoostButton from './BoostButton';
+import BoostButton from './BoostButton'; // ✅ works IF BoostButton.tsx is in `src/`
 import ZiiPostForm from './ZiiPostForm';
 import PostCard from './PostCard';
 import AuthForm from './AuthForm';
