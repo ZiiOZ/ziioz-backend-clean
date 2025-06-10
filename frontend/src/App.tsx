@@ -9,7 +9,7 @@ import PostCard from './PostCard';
 import AuthForm from './AuthForm';
 import ZiiPostFeed from './ZiiPostFeed';
 import { supabase } from './supabaseClient';
-import ZiiPay from './ZiiPay';
+import ZiiPay from './ziiPay';
 import ZiiShop from './ZiiShop';
 
 function App() {
