@@ -1,4 +1,3 @@
-// src/ZiiShopPreferences.tsx
 import { useState } from 'react';
 
 const layoutOptions = ['Grid', 'Carousel', 'Magazine'];
@@ -6,7 +5,7 @@ const marketingOptions = ['Starter', 'Pro', 'Advanced'];
 const addons = ['AR Support', 'AI Enhancer', 'Analytics Suite'];
 const engagementOptions = ['Creator', 'Influencer', 'Affiliate'];
 
-export default function ZiiShopPreferences() {
+export default function ZiiShopPreferences({ onContinue }: { onContinue: () => void }) {
   const [layout, setLayout] = useState('');
   const [marketing, setMarketing] = useState('');
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
@@ -74,7 +73,7 @@ export default function ZiiShopPreferences() {
       </div>
 
       <button
-        onClick={() => alert('Preferences saved!')}
+        onClick={onContinue}
         className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
       >
         Save and Finish
