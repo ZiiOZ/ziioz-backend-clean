@@ -1,3 +1,4 @@
+// src/ZiiShop.tsx
 import { useState } from 'react';
 import ZiiShopQuestions from './ZiiShopQuestions';
 import ZiiShopPreferences from './ZiiShopPreferences';
