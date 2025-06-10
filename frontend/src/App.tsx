@@ -9,8 +9,10 @@ import PostCard from './PostCard';
 import AuthForm from './AuthForm';
 import ZiiPostFeed from './ZiiPostFeed';
 import { supabase } from './supabaseClient';
-import ZiiPay from './ZiiPay'; // ✅
+import ZiiPay from './ZiiPay';
 import ZiiShop from './ZiiShop';
+import PrivacyPolicy from './PrivacyPolicy';
+import TermsOfUse from './TermsOfUse';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -125,7 +127,16 @@ function App() {
 
         {/* Auth Route */}
         <Route path="/auth" element={<AuthForm />} />
+
+        {/* Privacy and Terms */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfUse />} />
       </Routes>
+
+      <footer className="text-xs text-gray-400 text-center mt-10 mb-4">
+        <a href="/privacy" className="underline mr-4">Privacy Policy</a>
+        <a href="/terms" className="underline">Terms of Use</a>
+      </footer>
     </Router>
   );
 }
