@@ -9,6 +9,8 @@ import PostCard from './PostCard';
 import AuthForm from './AuthForm';
 import ZiiPostFeed from './ZiiPostFeed';
 import { supabase } from './supabaseClient';
+import ZiiPay from './ZiiPay';
+import ZiiShop from './ZiiShop';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -90,6 +92,9 @@ function App() {
           }
         />
 
+        {/* ZiiShop Route */}
+        <Route path="/ziishop" element={<ZiiShop />} />
+
         {/* ZiiPostFeed Route */}
         <Route
           path="/ziiposts"
@@ -114,6 +119,9 @@ function App() {
             </div>
           }
         />
+
+        {/* ZiiPay Route */}
+        <Route path="/ziipay" element={<ZiiPay />} />
 
         {/* Auth Route */}
         <Route path="/auth" element={<AuthForm />} />
