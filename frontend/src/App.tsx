@@ -13,6 +13,8 @@ import ZiiPay from './ZiiPay';
 import ZiiShop from './ZiiShop';
 import PrivacyPolicy from './PrivacyPolicy';
 import TermsOfUse from './TermsOfUse';
+import AdminDashboard from './pages/AdminDashboard';
+import Settings from './pages/Settings';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -93,6 +95,17 @@ function App() {
             </div>
           }
         />
+{localStorage.getItem('ziioz_admin') === 'true' && (
+  <div className="fixed top-2 right-2 bg-black text-white text-xs px-3 py-1 rounded-full shadow-lg z-50">
+    🛡️ Admin Mode
+  </div>
+)}
+<div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around py-2 z-40 sm:hidden">
+  <a href="/" className="text-xs text-gray-600 hover:text-black">🏠 Home</a>
+  <a href="/ziiposts" className="text-xs text-gray-600 hover:text-black">📰 Feed</a>
+  <a href="/ziishop" className="text-xs text-gray-600 hover:text-black">🛍️ Shop</a>
+  <a href="/settings" className="text-xs text-gray-600 hover:text-black">⚙️ Settings</a>
+</div>
 
         {/* ZiiShop Route */}
         <Route path="/ziishop" element={<ZiiShop />} />
@@ -125,6 +138,23 @@ function App() {
         {/* ZiiPay Route */}
         <Route path="/ziipay" element={<ZiiPay />} />
 
+        {/* Settings Route */}
+        <Route path="/settings" element={<Settings />} />
+
+        {/* Admin Route with LocalStorage Lock */}
+        <Route
+          path="/admin"
+          element={
+            localStorage.getItem('ziioz_admin') === 'true' ? (
+              <AdminDashboard />
+            ) : (
+              <div className="min-h-screen flex items-center justify-center text-center text-red-600 p-8">
+                🚫 Access Denied — You are not authorized to view this page.
+              </div>
+            )
+          }
+        />
+
         {/* Auth Route */}
         <Route path="/auth" element={<AuthForm />} />
 
@@ -135,7 +165,8 @@ function App() {
 
       <footer className="text-xs text-gray-400 text-center mt-10 mb-4">
         <a href="/privacy" className="underline mr-4">Privacy Policy</a>
-        <a href="/terms" className="underline">Terms of Use</a>
+        <a href="/terms" className="underline mr-4">Terms of Use</a>
+        <a href="/settings" className="underline">Settings</a>
       </footer>
     </Router>
   );

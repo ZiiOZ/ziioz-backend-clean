@@ -6,9 +6,34 @@ export default function ZiiPay() {
   const [businessName, setBusinessName] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Admin Unlock Logic
+  const [showPasscodeInput, setShowPasscodeInput] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [isAdmin, setIsAdmin] = useState(
+    localStorage.getItem('ziioz_admin') === 'true'
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
+  };
+
+  const unlockAdmin = () => {
+    if (passcode === 'letmein') {
+      localStorage.setItem('ziioz_admin', 'true');
+      setIsAdmin(true);
+      alert('✅ Admin mode enabled');
+    } else {
+      alert('❌ Incorrect passcode');
+    }
+    setPasscode('');
+    setShowPasscodeInput(false);
+  };
+
+  const disableAdmin = () => {
+    localStorage.removeItem('ziioz_admin');
+    setIsAdmin(false);
+    alert('🚫 Admin mode disabled');
   };
 
   return (
@@ -61,6 +86,45 @@ export default function ZiiPay() {
       >
         ← Back to ZiiOZ Home
       </Link>
+
+      {/* 🔐 Hidden Admin Section */}
+      <div className="mt-10 text-xs text-gray-400 text-center">
+        {!isAdmin && !showPasscodeInput && (
+          <button
+            onClick={() => setShowPasscodeInput(true)}
+            className="underline"
+          >
+            (Admin?)
+          </button>
+        )}
+
+        {showPasscodeInput && (
+          <div className="mt-2 space-y-2">
+            <input
+              type="password"
+              placeholder="Enter passcode"
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              className="border border-gray-300 rounded px-3 py-1 text-sm w-48"
+            />
+            <button
+              onClick={unlockAdmin}
+              className="block w-full bg-black text-white py-1 rounded hover:bg-gray-800"
+            >
+              Unlock Admin Mode
+            </button>
+          </div>
+        )}
+
+        {isAdmin && (
+          <button
+            onClick={disableAdmin}
+            className="mt-4 text-red-600 underline"
+          >
+            Disable Admin Mode
+          </button>
+        )}
+      </div>
     </div>
   );
 }
