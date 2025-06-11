@@ -37,8 +37,14 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+
+      {localStorage.getItem('ziioz_admin') === 'true' && (
+        <div className="fixed top-2 right-2 bg-black text-white text-xs px-3 py-1 rounded-full shadow-lg z-50">
+          🛡️ Admin Mode
+        </div>
+      )}
+
       <Routes>
-        {/* Home Route */}
         <Route
           path="/"
           element={
@@ -95,53 +101,10 @@ function App() {
             </div>
           }
         />
-{localStorage.getItem('ziioz_admin') === 'true' && (
-  <div className="fixed top-2 right-2 bg-black text-white text-xs px-3 py-1 rounded-full shadow-lg z-50">
-    🛡️ Admin Mode
-  </div>
-)}
-<div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around py-2 z-40 sm:hidden">
-  <a href="/" className="text-xs text-gray-600 hover:text-black">🏠 Home</a>
-  <a href="/ziiposts" className="text-xs text-gray-600 hover:text-black">📰 Feed</a>
-  <a href="/ziishop" className="text-xs text-gray-600 hover:text-black">🛍️ Shop</a>
-  <a href="/settings" className="text-xs text-gray-600 hover:text-black">⚙️ Settings</a>
-</div>
-
-        {/* ZiiShop Route */}
         <Route path="/ziishop" element={<ZiiShop />} />
-
-        {/* ZiiPostFeed Route */}
-        <Route
-          path="/ziiposts"
-          element={
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-              <div className="w-full bg-green-100 text-green-700 text-center py-2 text-sm font-medium shadow-sm mb-4">
-                🟢 ZiiOZ is Live — Join the movement!
-              </div>
-
-              <h1 className="text-4xl font-bold text-blue-600 mb-6">
-                Your ZiiPosts Feed
-              </h1>
-
-              <div className="mb-4 flex items-center space-x-4">
-                <UserAvatar />
-                <UserAvatar imageUrl="https://i.pravatar.cc/150?img=32" />
-              </div>
-
-              <div className="w-full max-w-md">
-                <ZiiPostFeed />
-              </div>
-            </div>
-          }
-        />
-
-        {/* ZiiPay Route */}
+        <Route path="/ziiposts" element={<ZiiPostFeed />} />
         <Route path="/ziipay" element={<ZiiPay />} />
-
-        {/* Settings Route */}
         <Route path="/settings" element={<Settings />} />
-
-        {/* Admin Route with LocalStorage Lock */}
         <Route
           path="/admin"
           element={
@@ -154,14 +117,18 @@ function App() {
             )
           }
         />
-
-        {/* Auth Route */}
         <Route path="/auth" element={<AuthForm />} />
-
-        {/* Privacy and Terms */}
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfUse />} />
       </Routes>
+
+      {/* ✅ Safe to put outside <Routes> */}
+      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-md flex justify-around py-2 z-40 sm:hidden">
+        <a href="/" className="text-xs text-gray-600 hover:text-black">🏠 Home</a>
+        <a href="/ziiposts" className="text-xs text-gray-600 hover:text-black">📰 Feed</a>
+        <a href="/ziishop" className="text-xs text-gray-600 hover:text-black">🛍️ Shop</a>
+        <a href="/settings" className="text-xs text-gray-600 hover:text-black">⚙️ Settings</a>
+      </div>
 
       <footer className="text-xs text-gray-400 text-center mt-10 mb-4">
         <a href="/privacy" className="underline mr-4">Privacy Policy</a>
