@@ -6,5 +6,6 @@ export default defineConfig({
   publicDir: 'public',
   build: {
     outDir: 'dist'
+    // 🔥 No rollupOptions, no input — Vite auto-detects public/index.html
   }
 })
