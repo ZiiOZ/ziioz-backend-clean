@@ -3,66 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZiiOZ – Social+ Evolved</title>
     <meta name="description" content="ZiiOZ – The Next Generation Social+ platform for creators, influencers, and businesses. Launch, grow, and connect in one powerful app." />
     <meta name="keywords" content="ZiiOZ, Social Media, Creator Economy, Influencer Platform, Video App, AI Social Network" />
     <meta name="author" content="Street Visual Pty Ltd" />
-    <title>ZiiOZ – Social+ Evolved</title>
-    <link rel="icon" href="/favicon.ico" />
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { height: 100%; font-family: sans-serif; background: #f9f9f9; color: #111; }
-      .hero {
-        height: 100vh;
-        background: url('https://ziioz-assets.s3.amazonaws.com/launch-bg.jpg') center/cover no-repeat;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem;
-      }
-      .hero h1 {
-        font-size: 3rem;
-        color: white;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-        margin-bottom: 1rem;
-      }
-      .hero p {
-        font-size: 1.2rem;
-        color: #eee;
-        max-width: 600px;
-        margin-bottom: 2rem;
-      }
-      .cta {
-        background: black;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 2rem;
-        font-size: 1rem;
-        text-decoration: none;
-        transition: background 0.3s;
-      }
-      .cta:hover {
-        background: #222;
-      }
-      footer {
-        position: absolute;
-        bottom: 1rem;
-        width: 100%;
-        text-align: center;
-        font-size: 0.8rem;
-        color: #888;
-      }
-    </style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   </head>
   <body>
-    <div class="hero">
-      <h1>ZiiOZ is Live 🌍</h1>
-      <p>The world's most powerful creator + business platform. Download the app, start earning, and own your audience.</p>
-      <a href="https://ziioz-frontend-platform.onrender.com" class="cta">Launch App</a>
-    </div>
-    <footer>
-      &copy; 2025 ZiiOZ by Street Visual Pty Ltd | ABN 76 661 421 807
-    </footer>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
