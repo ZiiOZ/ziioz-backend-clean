@@ -3,29 +3,33 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-import aiPostEnhance from './api/ai-post-enhance';
-import spinPost from './api/spin-post';
-import ziibotReply from './api/ziibot-reply'; // ✅ Handles /api/ai-reply route inside
-
+// ✅ Load environment variables
 dotenv.config();
+
+// ✅ Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ✅ Supabase Admin Client
-export const supabase = createClient(
+const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ Routes
+// ✅ ZiiOZ AI Routes
+import aiPostEnhance from './api/ai-post-enhance';
+import spinPost from './api/spin-post';
+import ziibotReply from './api/ziibot-reply';
+
 app.use(aiPostEnhance);
 app.use(spinPost);
 app.use(ziibotReply);
 
-// ✅ Boost Endpoint (safe and clean)
+// ✅ Boost Endpoint
 app.post('/api/boost-comment', async (req, res) => {
   const { commentId, userSession } = req.body;
 
@@ -52,11 +56,34 @@ app.post('/api/boost-comment', async (req, res) => {
   return res.json({ success: true });
 });
 
+// ✅ NEW: Flag User Endpoint for Law Enforcement System
+app.post('/api/flag-user', async (req, res) => {
+  const { user_id, flagged_by, reason, ai_score, evidence } = req.body;
+
+  const { error } = await supabase.from('flagged_cases').insert([
+    {
+      user_id,
+      flagged_by,
+      reason,
+      ai_score,
+      case_status: 'pending',
+      evidence,
+    },
+  ]);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.status(200).json({ message: 'User flagged successfully.' });
+});
+
 // ✅ Health Check
 app.get('/', (req, res) => {
   res.send('ZiiOZ Backend is LIVE ✅');
 });
 
+// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`ZiiOZ backend running at http://localhost:${PORT}`);
 });
