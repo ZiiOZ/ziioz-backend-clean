@@ -1,15 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import path from 'path'
 
 export default defineConfig({
-  root: './',
   plugins: [react()],
   publicDir: 'public',
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      input: resolve(__dirname, 'index.html') // ✅ NOT in /public
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    historyApiFallback: true, // 🔥 Enables fallback for SPA routes like /admin/flagged
+  }
 })
