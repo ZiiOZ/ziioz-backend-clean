@@ -1,7 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import VitePluginRewriteAll from 'vite-plugin-rewrite-all';
 
 export default defineConfig({
-  plugins: [react()],
-  publicDir: 'public', // ✅ Ensures _redirects is copied
+  plugins: [
+    react(),
+    VitePluginRewriteAll(), // ✅ force client-side routing fallback
+  ],
+  publicDir: 'public',
 });
