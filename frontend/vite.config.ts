@@ -3,12 +3,13 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig({
+  root: './',
   plugins: [react()],
   publicDir: 'public',
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
+      input: resolve(__dirname, 'index.html') // ✅ NOT in /public
     },
   },
 })
