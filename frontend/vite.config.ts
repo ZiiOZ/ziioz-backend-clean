@@ -4,12 +4,16 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  build: {
-    outDir: 'dist',
-  },
+  base: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    outDir: 'dist', // ✅ THIS MUST EXIST
+  },
+  server: {
+    historyApiFallback: true,
   },
 });
