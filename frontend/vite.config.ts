@@ -1,9 +1,8 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
-  base: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -14,6 +13,8 @@ export default defineConfig({
     outDir: 'dist',
   },
   server: {
-    historyApiFallback: true,
+    fs: {
+      allow: ['.'],
+    },
   },
-})
+});
