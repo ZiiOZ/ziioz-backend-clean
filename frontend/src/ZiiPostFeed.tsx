@@ -1,14 +1,8 @@
-import { useEffect, useState } from 'react';
-import { supabase } from './supabaseClient';
-import PostCard from './PostCard';
+import { useEffect, useState } from "react";
 
 interface Post {
   id: string;
   content: string;
-  hook: string;
-  hashtags: string[];
-  image_url?: string;
-  visible: boolean;
   created_at: string;
 }
 
@@ -16,34 +10,25 @@ export default function ZiiPostFeed() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    fetchPosts();
+    // Dummy data for now — we’ll link Supabase again next
+    setPosts([
+      { id: "1", content: "🚀 First post on ZiiOZ!", created_at: "2025-06-15" },
+      { id: "2", content: "🔥 AI comments, boosts, and more coming soon!", created_at: "2025-06-14" },
+    ]);
   }, []);
 
-  const fetchPosts = async () => {
-    const { data, error } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('visible', true)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching posts:', error);
-    } else {
-      setPosts(data || []);
-    }
-  };
-
   return (
-    <div className="p-4 space-y-6">
-      {posts.length === 0 ? (
-        <div className="text-center text-gray-400 text-sm">
-          😅 No posts yet... Be the first to post something amazing!
+    <div className="p-4 max-w-xl mx-auto space-y-4">
+      <h2 className="text-2xl font-bold text-center text-gray-800">📡 Live Feed</h2>
+      {posts.map((post) => (
+        <div
+          key={post.id}
+          className="bg-white p-4 shadow rounded-lg border border-gray-200"
+        >
+          <p className="text-gray-800">{post.content}</p>
+          <p className="text-sm text-gray-500 mt-2">{post.created_at}</p>
         </div>
-      ) : (
-        posts.map((post) => (
-          <PostCard key={post.id} post={post} refreshPosts={fetchPosts} />
-        ))
-      )}
+      ))}
     </div>
   );
 }
