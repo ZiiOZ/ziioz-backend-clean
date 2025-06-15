@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/home'; // ✅ matches actual file name
+import Home from "./pages/Home";
+
 
 
 export default function App() {
