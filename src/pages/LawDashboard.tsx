@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -45,12 +44,10 @@ export default function LawDashboard() {
         <TabsContent value="reports">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reports.map((report) => (
-              <Card key={report.id}>
-                <CardContent className="p-4">
-                  <p><strong>ID:</strong> {report.id}</p>
-                  <p><strong>Created:</strong> {new Date(report.created_at).toLocaleString()}</p>
-                </CardContent>
-              </Card>
+              <div key={report.id} className="bg-white rounded-xl p-4 shadow">
+                <p><strong>ID:</strong> {report.id}</p>
+                <p><strong>Created:</strong> {new Date(report.created_at).toLocaleString()}</p>
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -58,12 +55,10 @@ export default function LawDashboard() {
         <TabsContent value="flagged">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {flagged.map((caseItem) => (
-              <Card key={caseItem.id}>
-                <CardContent className="p-4">
-                  <p><strong>Case:</strong> {caseItem.title || caseItem.id}</p>
-                  <p><strong>Status:</strong> <Badge>{caseItem.status || "Pending"}</Badge></p>
-                </CardContent>
-              </Card>
+              <div key={caseItem.id} className="bg-white rounded-xl p-4 shadow">
+                <p><strong>Case:</strong> {caseItem.title || caseItem.id}</p>
+                <p><strong>Status:</strong> <Badge>{caseItem.status || "Pending"}</Badge></p>
+              </div>
             ))}
           </div>
         </TabsContent>
@@ -71,12 +66,10 @@ export default function LawDashboard() {
         <TabsContent value="agencies">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {agencies.map((agency) => (
-              <Card key={agency.id}>
-                <CardContent className="p-4">
-                  <p><strong>Name:</strong> {agency.name}</p>
-                  <p><strong>Region:</strong> {agency.region}</p>
-                </CardContent>
-              </Card>
+              <div key={agency.id} className="bg-white rounded-xl p-4 shadow">
+                <p><strong>Name:</strong> {agency.name}</p>
+                <p><strong>Region:</strong> {agency.region}</p>
+              </div>
             ))}
           </div>
         </TabsContent>
