@@ -1,8 +1,8 @@
+// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-
 
 export default defineConfig({
   plugins: [
@@ -11,10 +11,10 @@ export default defineConfig({
       targets: [
         {
           src: 'public/_redirects',
-          dest: '.' // copies to dist/
-        }
-      ]
-    })
+          dest: '.', // ← puts it directly into /dist/
+        },
+      ],
+    }),
   ],
   resolve: {
     alias: {
@@ -24,10 +24,4 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  server: {
-    fs: {
-      allow: ['.'],
-    },
-  },
 });
-
