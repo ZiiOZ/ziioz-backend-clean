@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+// src/lib/utils.ts
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-variants";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
