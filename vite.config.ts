@@ -1,4 +1,3 @@
-// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -11,7 +10,7 @@ export default defineConfig({
       targets: [
         {
           src: 'public/_redirects',
-          dest: '.', // ← puts it directly into /dist/
+          dest: '.', // Copy to root of `dist/`
         },
       ],
     }),
