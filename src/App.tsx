@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import LawDashboard from "./pages/LawDashboard";
 
-export default function App() {
+function App() {
   return (
     <Router>
       <Routes>
@@ -13,3 +13,5 @@ export default function App() {
     </Router>
   );
 }
+
+export default App;
