@@ -1,19 +1,12 @@
 import { defineConfig } from 'vite'
-import { resolve } from 'path'
-import fs from 'fs'
-
-// Ensure _redirects gets copied to dist
-const copyRedirects = () => {
-  return {
-    name: 'copy-redirects',
-    closeBundle() {
-      const src = resolve(__dirname, 'public/_redirects');
-      const dest = resolve(__dirname, 'dist/_redirects');
-      fs.copyFileSync(src, dest);
-    },
-  };
-};
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
-  plugins: [copyRedirects()],
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),  // this is what makes @/components work
+    },
+  },
 })
