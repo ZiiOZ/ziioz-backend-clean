@@ -1,8 +1,13 @@
+// src/pages/LawDashboard.tsx
+import React from "react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabaseClient";
+
+// ...keep rest of your code unchanged
+
 
 export default function LawDashboard() {
   const [reports, setReports] = useState<any[]>([]);
