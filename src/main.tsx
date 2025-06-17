@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LawDashboard from "@/pages/LawDashboard";
+import Home from "@/pages/Home";
 // import other routes...
 
 <BrowserRouter>
