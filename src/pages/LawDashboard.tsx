@@ -1,8 +1,10 @@
 // src/pages/LawDashboard.tsx
+import React from "react";
+
 export default function LawDashboard() {
   return (
-    <div className="p-8 text-2xl font-bold text-center text-blue-600">
-      🛡️ Law Enforcement Dashboard is Live!
+    <div className="text-center text-2xl font-bold text-red-600 mt-10">
+      🔒 Law Enforcement Dashboard
     </div>
   );
 }
