@@ -6,6 +6,9 @@ dotenv.config({ path: '.env.local' });
 
 
 export default defineConfig({
+  esbuild: {
+  jsxInject: `import React from 'react'`
+}
   plugins: [react()],
   resolve: {
     alias: {
