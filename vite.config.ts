@@ -1,23 +1,18 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import fs from 'fs'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 
 export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: 'copy-redirects',
-      closeBundle() {
-        const src = path.resolve(__dirname, 'public/_redirects');
-        const dest = path.resolve(__dirname, 'dist/_redirects');
-        fs.copyFileSync(src, dest);
-      }
-    }
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, 'src'),
     },
   },
-})
+  server: {
+    host: true,
+  },
+});
