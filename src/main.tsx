@@ -1,12 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LawDashboard from "@/pages/LawDashboard";
-import Home from "@/pages/Home";
-// import other routes...
+// src/main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
 
-<BrowserRouter>
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/lawdashboard" element={<LawDashboard />} />
-    {/* other routes */}
-  </Routes>
-</BrowserRouter>
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
