@@ -1,6 +1,6 @@
+// ✅ index.ts
 import express from 'express';
 import cors from 'cors';
-
 import commentsApi from './comments.api';
 import aiPostEnhance from './ai-post-enhance';
 import spinPost from './spin-post';
