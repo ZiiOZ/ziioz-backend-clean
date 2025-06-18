@@ -4,14 +4,14 @@ import path from 'path';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
-  base: "/", // ✅ this must be here
+  base: "/", // ✅ must be here, not inside `plugins`
   plugins: [
     react(),
     viteStaticCopy({
       targets: [
         {
-          src: 'public/_redirects',
-          dest: '.' // ✅ goes to dist/
+          src: 'public/_redirects', // ✅ this gets copied
+          dest: '.'                 // ✅ into dist/
         }
       ]
     })
