@@ -3,17 +3,14 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 
 router.get('/comments', async (req: Request, res: Response) => {
-  res.json({ message: 'Get comments endpoint working.' });
+  res.json({ message: 'Sample GET' });
 });
 
 router.post('/comments', async (req: Request, res: Response) => {
-  const { content, postId } = req.body;
-  if (!content || !postId) {
-    return res.status(400).json({ error: 'Missing content or postId' });
-  }
+  const { content } = req.body;
+  if (!content) return res.status(400).json({ error: 'Missing content' });
 
-  // Replace with Supabase logic
-  res.json({ success: true, content, postId });
+  res.json({ posted: true });
 });
 
 export default router;
