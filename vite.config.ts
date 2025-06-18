@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'path';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   base: '/',
@@ -9,16 +9,14 @@ export default defineConfig({
     react(),
     viteStaticCopy({
       targets: [
-        {
-          src: 'public/_redirects', // ✅ only one underscore
-          dest: '.'                 // ✅ copies to dist/
-        }
+        { src: 'public/_redirects', dest: '.' },
+        { src: 'public/static.json', dest: '.' }
       ]
     })
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
     }
   }
 });
