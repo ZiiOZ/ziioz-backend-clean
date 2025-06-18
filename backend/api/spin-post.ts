@@ -1,30 +1,34 @@
 import { Router, Request, Response } from 'express';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
 const router = Router();
 
-const openai = new OpenAIApi(
-  new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 router.post('/spin-post', async (req: Request, res: Response) => {
-  try {
-    const { content } = req.body;
+  const { original } = req.body;
 
-    const response = await openai.createChatCompletion({
+  if (!original) {
+    return res.status(400).json({ error: 'Original content is required' });
+  }
+
+  try {
+    const result = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
-        { role: 'system', content: 'You are a witty social media content spinner.' },
-        { role: 'user', content: `Spin this post into a creative, engaging version:\n\n${content}` },
+        {
+          role: 'user',
+          content: `Rewrite the following social media post in a fun, engaging way:\n\n${original}`,
+        },
       ],
     });
 
-    const spin = response.data.choices[0]?.message?.content;
-    res.status(200).json({ spin });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    const spun = result.choices[0]?.message?.content || '';
+    res.json({ spun });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'OpenAI error' });
   }
 });
 

@@ -1,30 +1,34 @@
 import { Router, Request, Response } from 'express';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
 const router = Router();
 
-const openai = new OpenAIApi(
-  new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 router.post('/ziibot-reply', async (req: Request, res: Response) => {
-  try {
-    const { comment } = req.body;
+  const { comment } = req.body;
 
-    const response = await openai.createChatCompletion({
+  if (!comment) {
+    return res.status(400).json({ error: 'Comment text is required' });
+  }
+
+  try {
+    const result = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
-        { role: 'system', content: 'You are ZiiBot, an insightful and friendly assistant who replies to social media comments with wit, kindness, or sass.' },
-        { role: 'user', content: `Reply to this comment:\n\n"${comment}"` },
+        {
+          role: 'user',
+          content: `Reply to this comment in a clever, helpful, and brand-friendly way: "${comment}"`,
+        },
       ],
     });
 
-    const reply = response.data.choices[0]?.message?.content;
-    res.status(200).json({ reply });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    const reply = result.choices[0]?.message?.content || '';
+    res.json({ reply });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'OpenAI error' });
   }
 });
 

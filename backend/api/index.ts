@@ -1,13 +1,11 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+
 import commentsApi from './comments.api';
 import aiPostEnhance from './ai-post-enhance';
-import serverless from 'serverless-http'; // ✅ required for Vercel compatibility
 import spinPost from './spin-post';
 import ziiBotReply from './ziibot-reply';
-
-app.use('/api', spinPost);
-app.use('/api', ziiBotReply);
 
 const app = express();
 app.use(cors());
@@ -15,10 +13,11 @@ app.use(express.json());
 
 app.use('/api', commentsApi);
 app.use('/api', aiPostEnhance);
+app.use('/api', spinPost);
+app.use('/api', ziiBotReply);
 
-app.get('/', (_: Request, res: Response) => {
-  res.send('ZiiOZ Backend Live');
-});
+app.get('/', (_, res) => res.send('ZiiOZ Backend Live'));
 
-// ✅ Wrap Express app using serverless-http for Vercel
-export const handler = serverless(app);
+export const handler = (req: VercelRequest, res: VercelResponse) => {
+  app(req as any, res as any);
+};
