@@ -1,30 +1,22 @@
-import express from 'express';
-import { Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { createClient } from '@supabase/supabase-js';
 
-const router = express.Router();
-
+// ✅ Initialize Supabase (from env vars)
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL as string,
+  process.env.SUPABASE_SERVICE_ROLE_KEY as string
 );
 
-router.post('/', async (req: Request, res: Response) => {
-  const { post_id, comment_text, author } = req.body;
+// ✅ Set up Express Router
+const router = Router();
 
-  const { data, error } = await supabase.from('comments').insert([
-    { post_id, comment_text, author }
-  ]);
+// 🔹 GET /api/comments?post_id=abc
+router.get('/comments', async (req: Request, res: Response) => {
+  const { post_id } = req.query;
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+  if (!post_id || typeof post_id !== 'string') {
+    return res.status(400).json({ error: 'post_id is required' });
   }
-
-  return res.status(200).json({ data });
-});
-
-router.get('/:post_id', async (req: Request, res: Response) => {
-  const { post_id } = req.params;
 
   const { data, error } = await supabase
     .from('comments')
@@ -36,7 +28,30 @@ router.get('/:post_id', async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 
-  return res.status(200).json({ comments: data });
+  return res.status(200).json(data);
+});
+
+// 🔹 POST /api/comments
+router.post('/comments', async (req: Request, res: Response) => {
+  const { post_id, author, content } = req.body;
+
+  if (!post_id || !author || !content) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const { data, error } = await supabase.from('comments').insert([
+    {
+      post_id,
+      author,
+      content,
+    },
+  ]);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  return res.status(201).json(data);
 });
 
 export default router;
