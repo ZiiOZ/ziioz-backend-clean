@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import lawdashboard from "./pages/lawdashboard"; // ✅ MUST match case exactly
+import LawDashboard from "./pages/lawdashboard";
 
 function App() {
   return (
