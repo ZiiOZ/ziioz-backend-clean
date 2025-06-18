@@ -7,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/lawdashboard" element={<LawDashboard />} /> {/* ✅ FIXED */}
+        <Route path="/lawdashboard" element={<LawDashboard />} />
       </Routes>
     </BrowserRouter>
   );
