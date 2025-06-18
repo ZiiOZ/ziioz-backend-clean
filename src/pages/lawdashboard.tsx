@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function lawdashboard() {
+export default function LawDashboard() {
   return (
     <div className="text-center text-2xl font-bold text-red-600 mt-10">
       🔒 Law Enforcement Dashboard
