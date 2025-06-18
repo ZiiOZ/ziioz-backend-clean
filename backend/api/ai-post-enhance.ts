@@ -14,10 +14,10 @@ router.post('/ai-enhance', async (req: Request, res: Response) => {
       messages: [{ role: 'user', content }],
     });
 
-    const enhanced = result.choices[0]?.message?.content ?? '';
-    res.json({ enhanced });
+    const aiText = result.choices[0]?.message?.content || '';
+    res.json({ enhanced: aiText });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message || 'OpenAI error' });
   }
 });
 
