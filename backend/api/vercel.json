@@ -3,8 +3,5 @@
     "api/index.ts": {
       "runtime": "nodejs18.x"
     }
-  },
-  "routes": [
-    { "src": "/(.*)", "dest": "/api/index.ts" }
-  ]
+  }
 }

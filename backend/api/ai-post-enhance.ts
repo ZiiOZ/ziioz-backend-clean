@@ -14,7 +14,8 @@ router.post('/ai-enhance', async (req: Request, res: Response) => {
       messages: [{ role: 'user', content }],
     });
 
-    res.json({ enhanced: result.choices[0]?.message?.content ?? '' });
+    const enhanced = result.choices[0]?.message?.content ?? '';
+    res.json({ enhanced });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
