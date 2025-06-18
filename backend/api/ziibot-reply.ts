@@ -1,55 +1,31 @@
-import express from 'express';
-import OpenAI from 'openai';
-import { supabase } from '../supabaseServerClient';
+import { Router, Request, Response } from 'express';
+import { Configuration, OpenAIApi } from 'openai';
 
+const router = Router();
 
-const router = express.Router();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+const openai = new OpenAIApi(
+  new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+);
 
-router.post('/api/ziibot-reply', async (req, res) => {
-  const { comment, commentId } = req.body;
-
-  if (!comment || !commentId) {
-    return res.status(400).json({ error: 'Missing comment or commentId' });
-  }
-
+router.post('/ziibot-reply', async (req: Request, res: Response) => {
   try {
-    const response = await openai.chat.completions.create({
+    const { comment } = req.body;
+
+    const response = await openai.createChatCompletion({
       model: 'gpt-4',
       messages: [
-        {
-          role: 'system',
-          content: 'You are ZiiBot, a sharp, helpful, and cheeky assistant.',
-        },
-        {
-          role: 'user',
-          content: comment,
-        },
+        { role: 'system', content: 'You are ZiiBot, an insightful and friendly assistant who replies to social media comments with wit, kindness, or sass.' },
+        { role: 'user', content: `Reply to this comment:\n\n"${comment}"` },
       ],
     });
 
-    const reply = response.choices?.[0]?.message?.content?.trim();
-
-    const { error } = await supabase
-      .from('comments')
-      .insert([
-        {
-          post_id: commentId,
-          username: 'ZiiBot',
-          content: reply,
-        },
-      ]);
-
-    if (error) {
-      console.error('Supabase error:', error);
-      return res.status(500).json({ error: 'Failed to store reply' });
-    }
-
-    res.json({ reply });
-  } catch (err) {
-    console.error('[ZiiBot Reply Error]', err);
-    res.status(500).json({ error: 'AI failed to generate reply' });
+    const reply = response.data.choices[0]?.message?.content;
+    res.status(200).json({ reply });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 
-export default router; // ✅ fix 2: export default router
+export default router;

@@ -1,32 +1,30 @@
-import express from 'express';
-import OpenAI from 'openai';
+import { Router, Request, Response } from 'express';
+import { Configuration, OpenAIApi } from 'openai';
 
-const router = express.Router();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+const router = Router();
 
-router.post('/api/spin-post', async (req, res) => {
-  const { content } = req.body;
-  if (!content) return res.status(400).json({ error: 'No content provided' });
+const openai = new OpenAIApi(
+  new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+);
 
+router.post('/spin-post', async (req: Request, res: Response) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{
-        role: 'user',
-        content: `
-Create 3 alternate versions of this post with different styles. Return in a JSON array.
+    const { content } = req.body;
 
-"${content}"
-        `
-      }],
+    const response = await openai.createChatCompletion({
+      model: 'gpt-4',
+      messages: [
+        { role: 'system', content: 'You are a witty social media content spinner.' },
+        { role: 'user', content: `Spin this post into a creative, engaging version:\n\n${content}` },
+      ],
     });
 
-    const raw = response.choices?.[0]?.message?.content?.trim();
-    const spins = JSON.parse(raw || '[]');
-    res.json({ spins });
-  } catch (err) {
-    console.error('SpinPost API error:', err);
-    res.status(500).json({ error: 'Spin failed' });
+    const spin = response.data.choices[0]?.message?.content;
+    res.status(200).json({ spin });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 

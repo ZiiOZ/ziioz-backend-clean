@@ -3,6 +3,11 @@ import cors from 'cors';
 import commentsApi from './comments.api';
 import aiPostEnhance from './ai-post-enhance';
 import serverless from 'serverless-http'; // ✅ required for Vercel compatibility
+import spinPost from './spin-post';
+import ziiBotReply from './ziibot-reply';
+
+app.use('/api', spinPost);
+app.use('/api', ziiBotReply);
 
 const app = express();
 app.use(cors());
