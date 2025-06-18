@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import LawDashboard from "./pages/LawDashboard";
+import LawDashboard from "./pages/lawdashboard";
 
 function App() {
   return (
