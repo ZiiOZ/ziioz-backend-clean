@@ -1,20 +1,19 @@
-// ✅ index.ts
-import express from 'express';
-import cors from 'cors';
+// api/index.ts
+import express, { Request, Response } from 'express';
+import { createServer } from '@vercel/node';
+
 import commentsApi from './comments.api';
 import aiPostEnhance from './ai-post-enhance';
 import spinPost from './spin-post';
 import ziiBotReply from './ziibot-reply';
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use('/api/comments', commentsApi);
+app.use('/api/ai', aiPostEnhance);
+app.use('/api/spin', spinPost);
+app.use('/api/ziibot', ziiBotReply);
 
-app.use('/api', commentsApi);
-app.use('/api', aiPostEnhance);
-app.use('/api', spinPost);
-app.use('/api', ziiBotReply);
+app.get('/', (_: Request, res: Response) => res.send('ZiiOZ backend running'));
 
-app.get('/', (_, res) => res.send('ZiiOZ Backend Live'));
-
-export default app;
+export default createServer(app); // ✅ Vercel-compatible handler
