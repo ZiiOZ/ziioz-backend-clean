@@ -1,19 +1,16 @@
-// api/index.ts ✅
-import { NowRequest, NowResponse } from '@vercel/node'
-import commentsApi from './comments.api'
-import aiPostEnhance from './ai-post-enhance'
-import spinPost from './spin-post'
-import ziiBotReply from './ziibot-reply'
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use('/api', commentsApi)
-app.use('/api', aiPostEnhance)
-app.use('/api', spinPost)
-app.use('/api', ziiBotReply)
+app.use(cors());
+app.use(express.json());
 
-export default app
+app.get('/api/hello', (_req, res) => {
+  res.json({ message: 'ZiiOZ Backend is working!' });
+});
+
+app.listen(PORT, () => {
+  console.log(`ZiiOZ backend running on port ${PORT}`);
+});

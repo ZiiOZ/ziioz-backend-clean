@@ -1,12 +1,12 @@
 {
-  "name": "ziioz-backend",
+  "name": "ziioz-backend-clean",
   "version": "1.0.0",
   "type": "module",
-  "main": "api/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn api/index.ts",
-    "start": "node api/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
