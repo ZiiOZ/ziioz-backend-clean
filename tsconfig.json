@@ -20,7 +20,7 @@
     "api/**/*.ts",
     "src/**/*",
     "backend/**/*"
-  ],
+, "api/boost-comment.ts"  ],
   "exclude": [
     "node_modules",
     "dist"
